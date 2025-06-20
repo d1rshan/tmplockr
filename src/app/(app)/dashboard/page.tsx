@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Note } from "@/lib/db/schema";
+import { UserButton } from "@clerk/nextjs";
 // import { File, User, Note } from "@/lib/db/schema";
 
 export default function DashboardPage() {
@@ -25,9 +26,16 @@ export default function DashboardPage() {
   const fetchNotes = async () => {
     const res = await axios.get("/api/notes");
     setNotes(res.data);
-    console.log(res);
   };
 
+  const deleteNote = async (id: number) => {
+    if (!id) {
+      alert("Note ID is required");
+      return;
+    }
+    const res = await axios.delete("/api/notes", { data: { id } });
+    setNotes((prev) => prev?.filter((note) => note.id !== res.data.id));
+  };
   const createNote = async () => {
     if (!title || !content) {
       alert("Title and content are required");
@@ -37,6 +45,7 @@ export default function DashboardPage() {
       title,
       content,
     });
+
     setNotes((prev) => [...(prev || []), res.data]);
     setTitle("");
     setContent("");
@@ -48,6 +57,7 @@ export default function DashboardPage() {
   }, []);
   return (
     <div className="flex flex-col h-full justify-center items-center">
+      <UserButton />
       {/* <div className="flex flex-col justify-center items-center">
         {user && (
           <div>
@@ -89,7 +99,24 @@ export default function DashboardPage() {
         Submit
       </button>
       <div>
-        {notes && notes.map((note) => <div key={note.id}>{note.title}</div>)}
+        {notes &&
+          notes.map((note) => (
+            <div
+              key={note.id}
+              className="bg-gray-100 p-4 m-2 rounded-lg flex justify-between items-end"
+            >
+              <div>
+                {note.title} <br />
+                {note.content}
+              </div>
+              <button
+                className="bg-red-600 text-red-100 p-1 rounded-lg cursor-pointer hover:bg-red-400"
+                onClick={() => deleteNote(note.id)}
+              >
+                delete
+              </button>
+            </div>
+          ))}
       </div>
     </div>
   );
