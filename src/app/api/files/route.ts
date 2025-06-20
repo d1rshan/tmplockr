@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import db from "@/lib/db";
 import { users, files as filesDB } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { files } from "@/lib/db/schema";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -101,5 +102,29 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error uploading files to Cloudinary:", error);
     return NextResponse.json({ error: "Upload failed!" }, { status: 500 });
+  }
+}
+
+
+export async function GET() {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 400 });
+    }
+
+    const res = await db
+      .select()
+      .from(files)
+      .where(eq(files.clerkUserId, userId));
+
+    return NextResponse.json(res, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching files from neondb", error);
+    return NextResponse.json(
+      { error: "Error fetching files" },
+      { status: 500 }
+    );
   }
 }

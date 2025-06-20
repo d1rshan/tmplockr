@@ -27,6 +27,7 @@ import {
   FileText,
   Trash2,
   Copy,
+  Download,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +43,21 @@ interface Note {
   createdAt: string;
 }
 
+interface FileItem {
+  id: string;
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  publicId: string;
+  uploadedAt: string;
+}
+
+interface UsageDetails {
+  id: string;
+  clerkUserId: string;
+  storageUsed: number;
+}
+
 export default function DashboardPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -54,48 +70,23 @@ export default function DashboardPage() {
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
+  // Files state
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  // Usage details state
+  const [usageDetails, setUsageDetails] = useState<UsageDetails | null>(null);
+  const [isLoadingUsage, setIsLoadingUsage] = useState(true);
+
   // Note detail modal state
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
-  // Mock usage data
-  const usageData = {
-    files: {
-      used: 80, // MB
-      limit: 100, // MB
-      unit: "MB",
-    },
-    notes: {
-      used: 3,
-      limit: 10,
-      unit: "notes",
-    },
-  };
-
-  // Mock data for demonstration
-  const files = [
-    {
-      id: 1,
-      name: "presentation.pdf",
-      type: "file",
-      size: "2.4 MB",
-      date: "Today",
-    },
-    {
-      id: 2,
-      name: "document.docx",
-      type: "file",
-      size: "1.2 MB",
-      date: "Yesterday",
-    },
-    {
-      id: 3,
-      name: "screenshot.png",
-      type: "image",
-      size: "0.8 MB",
-      date: "Jun 10",
-    },
-  ];
+  // Storage limits (100MB = 100 * 1024 * 1024 bytes)
+  const STORAGE_LIMIT_BYTES = 100 * 1024 * 1024;
+  const NOTE_LIMIT = 10;
 
   // Fetch notes from API
   const fetchNotes = async () => {
@@ -115,6 +106,155 @@ export default function DashboardPage() {
     }
   };
 
+  // Fetch files from API
+  const fetchFiles = async () => {
+    try {
+      setIsLoadingFiles(true);
+      const response = await fetch("/api/files");
+      if (response.ok) {
+        const data = await response.json();
+        setFiles(data);
+      } else {
+        console.error("Failed to fetch files");
+      }
+    } catch (error) {
+      console.error("Error fetching files:", error);
+    } finally {
+      setIsLoadingFiles(false);
+    }
+  };
+
+  // Fetch usage details from API
+  const fetchUsageDetails = async () => {
+    try {
+      setIsLoadingUsage(true);
+      const response = await fetch("/api/usage-details");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data !== "NO FILES") {
+          setUsageDetails(data);
+        } else {
+          setUsageDetails({ id: "", clerkUserId: "", storageUsed: 0 });
+        }
+      } else {
+        console.error("Failed to fetch usage details");
+      }
+    } catch (error) {
+      console.error("Error fetching usage details:", error);
+    } finally {
+      setIsLoadingUsage(false);
+    }
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  // Handle file selection
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    handleFilesValidation(files);
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    handleFilesValidation(files);
+  };
+
+  // Validate files before upload
+  const handleFilesValidation = (files: File[]) => {
+    if (files.length === 0) {
+      toast.error("Please select at least one file");
+      return;
+    }
+
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    const currentStorageUsed = usageDetails?.storageUsed || 0;
+    const availableStorage = STORAGE_LIMIT_BYTES - currentStorageUsed;
+
+    if (totalSize > availableStorage) {
+      toast.error(
+        `Total file size (${formatFileSize(
+          totalSize
+        )}) exceeds available storage (${formatFileSize(availableStorage)})`
+      );
+      return;
+    }
+
+    setSelectedFiles(files);
+  };
+
+  // Upload files
+  const handleFileUpload = async () => {
+    if (selectedFiles.length === 0) {
+      toast.error("Please select files to upload");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+
+      const formData = new FormData();
+      selectedFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90; // Keep at 90% until actual upload completes
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      const response = await fetch("/api/files", {
+        method: "POST",
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (response.ok) {
+        toast.success(`${selectedFiles.length} file(s) uploaded successfully!`);
+        setSelectedFiles([]);
+        // Refresh files and usage details
+        await Promise.all([fetchFiles(), fetchUsageDetails()]);
+      } else {
+        const error = await response.json();
+        toast.error(`Upload failed: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      toast.error("Failed to upload files");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
   // Create new note
   const handleSaveNote = async () => {
     if (!noteTitle.trim() || !noteContent.trim()) {
@@ -123,9 +263,9 @@ export default function DashboardPage() {
     }
 
     // Check note limit
-    if (notes.length >= usageData.notes.limit) {
+    if (notes.length >= NOTE_LIMIT) {
       toast.error(
-        `You've reached the maximum limit of ${usageData.notes.limit} notes. Please delete some notes before creating new ones.`
+        `You've reached the maximum limit of ${NOTE_LIMIT} notes. Please delete some notes before creating new ones.`
       );
       return;
     }
@@ -275,35 +415,66 @@ export default function DashboardPage() {
     }
   };
 
+  // Download file from Cloudinary
+  const downloadFile = (file: FileItem) => {
+    try {
+      // Extract file extension from filename
+      const fileExtension = file.fileName.split(".").pop() || "";
+
+      // Construct Cloudinary download URL with fl_attachment flag to force download
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const downloadUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${file.publicId}.${fileExtension}`;
+
+      // Create a temporary link element to trigger download
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = file.fileName; // Set the filename for download
+      link.target = "_blank";
+
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success(`Downloading ${file.fileName}...`);
+    } catch (error) {
+      console.error("Failed to download file:", error);
+      toast.error("Failed to download file");
+    }
+  };
+
   // Load notes on component mount
   useEffect(() => {
     fetchNotes();
   }, []);
 
-  const simulateUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
+  // Load all data on component mount
+  useEffect(() => {
+    Promise.all([fetchNotes(), fetchFiles(), fetchUsageDetails()]);
+  }, []);
 
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 300);
+  // Calculate usage data from real data
+  const usageData = {
+    files: {
+      used: usageDetails ? usageDetails.storageUsed / (1024 * 1024) : 0, // Convert to MB
+      limit: STORAGE_LIMIT_BYTES / (1024 * 1024), // Convert to MB
+      unit: "MB",
+    },
+    notes: {
+      used: notes.length,
+      limit: NOTE_LIMIT,
+      unit: "notes",
+    },
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
-            background: "#363636",
+            background: "#000000",
             color: "#fff",
           },
           success: {
@@ -360,8 +531,8 @@ export default function DashboardPage() {
                         File Storage
                       </h3>
                       <p className="text-sm text-slate-500">
-                        {usageData.files.used}/{usageData.files.limit}{" "}
-                        {usageData.files.unit} used
+                        {usageData.files.used.toFixed(2)}/
+                        {usageData.files.limit} {usageData.files.unit} used
                       </p>
                     </div>
                   </div>
@@ -382,7 +553,9 @@ export default function DashboardPage() {
                       className="h-2"
                     />
                     <p className="text-xs text-slate-400">
-                      {usageData.files.limit - usageData.files.used}{" "}
+                      {(usageData.files.limit - usageData.files.used).toFixed(
+                        2
+                      )}{" "}
                       {usageData.files.unit} remaining
                     </p>
                   </div>
@@ -445,26 +618,113 @@ export default function DashboardPage() {
                 </TabsList>
 
                 <TabsContent value="files" className="space-y-4">
-                  <div className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center">
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragOver
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-slate-200"
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-slate-100 p-3 rounded-full">
                         <UploadIcon className="h-6 w-6 text-slate-600" />
                       </div>
                       <h3 className="font-medium text-slate-900">
-                        Drag files here or click to upload
+                        {isDragOver
+                          ? "Drop files here"
+                          : "Drag files here or click to upload"}
                       </h3>
                       <p className="text-sm text-slate-500">
-                        Support for documents, PDFs, and more
+                        Support for documents, PDFs, images, and more
                       </p>
-                      <Button
-                        onClick={simulateUpload}
-                        disabled={isUploading}
-                        className="mt-2"
-                      >
-                        Select Files
-                      </Button>
+                      <div className="flex flex-col gap-2 mt-2">
+                        <input
+                          type="file"
+                          multiple
+                          onChange={handleFileSelect}
+                          className="hidden"
+                          id="file-upload"
+                        />
+                        <label htmlFor="file-upload">
+                          <Button
+                            disabled={isUploading}
+                            className="cursor-pointer"
+                            asChild
+                          >
+                            <span>Select Files</span>
+                          </Button>
+                        </label>
+                        {usageDetails && (
+                          <p className="text-xs text-slate-400">
+                            Available storage:{" "}
+                            {formatFileSize(
+                              STORAGE_LIMIT_BYTES - usageDetails.storageUsed
+                            )}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
+
+                  {selectedFiles.length > 0 && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-slate-900">
+                          Selected Files:
+                        </h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedFiles([])}
+                          className="text-slate-500 hover:text-slate-700"
+                        >
+                          Clear Selection
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedFiles.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="bg-slate-100 p-2 rounded">
+                                {file.type.startsWith("image/") ? (
+                                  <ImageIcon className="h-4 w-4 text-slate-600" />
+                                ) : (
+                                  <FileIcon className="h-4 w-4 text-slate-600" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {file.name}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  {formatFileSize(file.size)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleFileUpload}
+                          disabled={isUploading}
+                          className="flex-1"
+                        >
+                          {isUploading
+                            ? "Uploading..."
+                            : `Upload ${selectedFiles.length} File${
+                                selectedFiles.length > 1 ? "s" : ""
+                              }`}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
                   {isUploading && (
                     <div className="space-y-2">
@@ -547,31 +807,53 @@ export default function DashboardPage() {
                       <h3 className="font-medium">Files </h3>
                     </div>
                     <div className="divide-y">
-                      {files.map((file) => (
-                        <div
-                          key={file.id}
-                          className="flex items-center justify-between p-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="bg-slate-100 p-2 rounded">
-                              {file.type === "image" ? (
-                                <ImageIcon className="h-5 w-5 text-slate-600" />
-                              ) : (
-                                <FileIcon className="h-5 w-5 text-slate-600" />
-                              )}
+                      {isLoadingFiles ? (
+                        <div className="p-4 text-center text-slate-500">
+                          Loading files...
+                        </div>
+                      ) : files.length === 0 ? (
+                        <div className="p-4 text-center text-slate-500">
+                          No files uploaded yet. Upload your first file!
+                        </div>
+                      ) : (
+                        files.map((file) => (
+                          <div
+                            key={file.id}
+                            className="flex items-center justify-between p-4"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="bg-slate-100 p-2 rounded">
+                                {file.fileType.startsWith("image/") ? (
+                                  <ImageIcon className="h-5 w-5 text-slate-600" />
+                                ) : (
+                                  <FileIcon className="h-5 w-5 text-slate-600" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-medium">{file.fileName}</p>
+                                <p className="text-sm text-slate-500">
+                                  {formatFileSize(file.fileSize)} •{" "}
+                                  {formatDate(file.uploadedAt)}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium">{file.name}</p>
-                              <p className="text-sm text-slate-500">
-                                {file.size} • {file.date}
-                              </p>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => downloadFile(file)}
+                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                                title="Download file"
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon">
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <Button variant="ghost" size="icon">
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
 
@@ -639,27 +921,53 @@ export default function DashboardPage() {
                 <TabsContent value="files">
                   <div className="rounded-md border">
                     <div className="divide-y">
-                      {files.map((file) => (
-                        <div
-                          key={file.id}
-                          className="flex items-center justify-between p-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="bg-slate-100 p-2 rounded">
-                              <FileIcon className="h-5 w-5 text-slate-600" />
+                      {isLoadingFiles ? (
+                        <div className="p-4 text-center text-slate-500">
+                          Loading files...
+                        </div>
+                      ) : files.length === 0 ? (
+                        <div className="p-4 text-center text-slate-500">
+                          No files uploaded yet. Upload your first file!
+                        </div>
+                      ) : (
+                        files.map((file) => (
+                          <div
+                            key={file.id}
+                            className="flex items-center justify-between p-4"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="bg-slate-100 p-2 rounded">
+                                {file.fileType.startsWith("image/") ? (
+                                  <ImageIcon className="h-5 w-5 text-slate-600" />
+                                ) : (
+                                  <FileIcon className="h-5 w-5 text-slate-600" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-medium">{file.fileName}</p>
+                                <p className="text-sm text-slate-500">
+                                  {formatFileSize(file.fileSize)} •{" "}
+                                  {formatDate(file.uploadedAt)}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium">{file.name}</p>
-                              <p className="text-sm text-slate-500">
-                                {file.size} • {file.date}
-                              </p>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => downloadFile(file)}
+                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                                title="Download file"
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon">
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <Button variant="ghost" size="icon">
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
                 </TabsContent>
