@@ -17,6 +17,8 @@ export const users = pgTable("users", {
   storageUsed: integer("storage_used").notNull().default(0),
 });
 
+export type User = typeof users.$inferSelect;
+
 // Files table
 export const files = pgTable("files", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -28,6 +30,8 @@ export const files = pgTable("files", {
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 
+export type File = typeof files.$inferSelect;
+
 // Notes table
 export const notes = pgTable("notes", {
   id: serial("id").primaryKey(),
@@ -36,3 +40,5 @@ export const notes = pgTable("notes", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export type Note = typeof notes.$inferSelect;

@@ -15,7 +15,10 @@ export async function GET() {
       .from(users)
       .where(eq(users.clerkUserId, userId));
 
-    return NextResponse.json(result[0], { status: 200 });
+    console.log(result);
+    if (result.length !== 0)
+      return NextResponse.json(result[0], { status: 200 });
+    return NextResponse.json({ data: "NO FILES" }, { status: 200 });
   } catch (error) {
     console.error("Error fetching user's usage details", error);
     return NextResponse.json(

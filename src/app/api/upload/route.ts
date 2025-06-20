@@ -67,10 +67,13 @@ export async function POST(request: NextRequest) {
       const result = await new Promise<CloudinaryUploadResponse>(
         (resolve, reject) => {
           cloudinary.uploader
-            .upload_stream({ folder: "test" }, (error, result) => {
-              if (error) reject(error);
-              else resolve(result as CloudinaryUploadResponse);
-            })
+            .upload_stream(
+              { folder: "test", resource_type: "raw" },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result as CloudinaryUploadResponse);
+              }
+            )
             .end(buffer);
         }
       );
