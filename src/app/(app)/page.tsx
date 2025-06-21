@@ -16,7 +16,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { ArrowRight, FileText, ImageIcon, Upload } from "lucide-react";
+import {
+  AlertCircleIcon,
+  ArrowRight,
+  FileText,
+  ImageIcon,
+  Upload,
+} from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
@@ -60,7 +66,7 @@ export default function HomePage() {
       }
     } catch (error: any) {
       setError(error.errors[0].message);
-      console.error("Error signing in", JSON.stringify(error, null, 2));
+      console.log("Error signing in", JSON.stringify(error, null, 2));
     }
   };
 
@@ -74,7 +80,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/about">How it works</Link>
+            <Link href="/sign-up">Get Started</Link>
           </Button>
         </div>
       </header>
@@ -83,15 +89,15 @@ export default function HomePage() {
         <div className="w-full max-w-5xl grid gap-8 md:grid-cols-2">
           <div className="flex flex-col justify-center space-y-4">
             <h2 className="text-4xl font-bold tracking-tight text-slate-900">
-              Share files without accounts
+              Share files fast and easy
             </h2>
             <p className="text-xl text-slate-600">
-              Upload your files, get a 4-digit code, and access them from
-              anywhere. No sign-up required.
+              Set up a account in seconds, upload your files, and access them
+              from anywhere.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button size="lg" className="gap-2" asChild>
-                <Link href="/upload">
+                <Link href="/sign-up">
                   <Upload size={18} />
                   Start uploading
                 </Link>
@@ -127,7 +133,7 @@ export default function HomePage() {
               <CardHeader>
                 <CardTitle>Access your files</CardTitle>
                 <CardDescription>
-                  Enter your 4-digit code to view your uploads
+                  Enter your 4-digit pin to view your uploads
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -169,6 +175,7 @@ export default function HomePage() {
               <CardFooter>
                 {error && (
                   <Alert variant="destructive">
+                    <AlertCircleIcon />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
@@ -180,7 +187,7 @@ export default function HomePage() {
       </main>
 
       <footer className="container mx-auto py-6 text-center text-slate-500">
-        <p>© 2025 FileVault. Simple, secure file sharing.</p>
+        <p>© 2025 TxtBin. Simple, secure file sharing.</p>
       </footer>
     </div>
   );

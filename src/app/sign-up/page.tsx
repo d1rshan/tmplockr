@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { useSignUp } from "@clerk/nextjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function SignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -67,76 +69,98 @@ export default function SignUpPage() {
         router.push("/dashboard");
       }
     } catch (error: any) {
-      console.error("Error signing up", JSON.stringify(error, null, 2));
+      console.log("Error signing up", JSON.stringify(error, null, 2));
       setError(error.errors[0].message);
     }
   };
 
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex justify-center items-center">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Sign Up </CardTitle>
-          <CardDescription>Create an account to get started</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignUp}>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="code">Username</Label>
-                <Input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Pin</Label>
-                <InputOTP
-                  maxLength={4}
-                  value={pin}
-                  onChange={(value) => setPin(value)}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} mask />
-                    <InputOTPSlot index={1} mask />
-                    <InputOTPSlot index={2} mask />
-                    <InputOTPSlot index={3} mask />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Re-enter Pin </Label>
-                <InputOTP
-                  maxLength={4}
-                  value={confirmPin}
-                  onChange={(value) => setConfirmPin(value)}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} mask />
-                    <InputOTPSlot index={1} mask />
-                    <InputOTPSlot index={2} mask />
-                    <InputOTPSlot index={3} mask />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-              {/* CAPTCHA Widget */}
-              <div id="clerk-captcha"></div>
-              <Button className="w-full" type="submit" disabled={!isLoaded}>
-                Sign Up
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter>
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-        </CardFooter>
-      </Card>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
+      <header className="container mx-auto py-6 px-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/">
+              <ArrowLeft size={16} /> Home
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <main className="flex-1 container mx-auto flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-5xl">
+          <div className="flex items-center justify-center">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Sign Up </CardTitle>
+                <CardDescription>
+                  Create an account to get started
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSignUp}>
+                  <div className="grid gap-6">
+                    <div className="grid gap-2">
+                      <Label htmlFor="code">Username</Label>
+                      <Input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="password">Pin</Label>
+                      <InputOTP
+                        maxLength={4}
+                        value={pin}
+                        onChange={(value) => setPin(value)}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} mask />
+                          <InputOTPSlot index={1} mask />
+                          <InputOTPSlot index={2} mask />
+                          <InputOTPSlot index={3} mask />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="password">Re-enter Pin </Label>
+                      <InputOTP
+                        maxLength={4}
+                        value={confirmPin}
+                        onChange={(value) => setConfirmPin(value)}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} mask />
+                          <InputOTPSlot index={1} mask />
+                          <InputOTPSlot index={2} mask />
+                          <InputOTPSlot index={3} mask />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    {/* CAPTCHA Widget */}
+                    <div id="clerk-captcha"></div>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={!isLoaded}
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+              <CardFooter>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
