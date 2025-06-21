@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,8 +17,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ArrowRight, FileText, ImageIcon, Upload } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSignIn } from "@clerk/nextjs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function HomePage() {
+  const [username, setUsername] = useState<string>("");
+  const [pin, setPin] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const { isLoaded, signIn, setActive } = useSignIn();
+
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isLoaded) {
+      return;
+    }
+    if (username.length === 0) {
+      setError("Username is required");
+      return;
+    }
+    if (pin.length !== 4) {
+      setError("Pin must be 4 digits");
+      return;
+    }
+    if (username.length < 4 || username.length > 64) {
+      setError("Username must be between 4 and 64 characters");
+      return;
+    }
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: username,
+        password: pin + process.env.NEXT_PUBLIC_PASSWORD_SALT,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.push("/dashboard");
+      }
+    } catch (error: any) {
+      setError(error.errors[0].message);
+      console.error("Error signing in", JSON.stringify(error, null, 2));
+    }
+  };
+
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
       <header className="container mx-auto py-6 px-4">
@@ -81,15 +131,23 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form action="/dashboard/1234">
+                <form onSubmit={handleSignIn}>
                   <div className="grid gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="code">Username</Label>
-                      <Input type="text" />
+                      <Input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="password">Password </Label>
-                      <InputOTP maxLength={4}>
+                      <InputOTP
+                        maxLength={4}
+                        value={pin}
+                        onChange={(value) => setPin(value)}
+                      >
                         <InputOTPGroup>
                           <InputOTPSlot index={0} mask />
                           <InputOTPSlot index={1} mask />
@@ -98,16 +156,23 @@ export default function HomePage() {
                         </InputOTPGroup>
                       </InputOTP>
                     </div>
+                    <Button
+                      className="w-full gap-2"
+                      type="submit"
+                      disabled={!isLoaded}
+                    >
+                      Access Files
+                    </Button>
                   </div>
                 </form>
               </CardContent>
               <CardFooter>
-                <Button className="w-full gap-2" asChild>
-                  <Link href="/dashboard/1234">
-                    Access Files
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
               </CardFooter>
             </Card>
           </div>
