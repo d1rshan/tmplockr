@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         (resolve, reject) => {
           cloudinary.uploader
             .upload_stream(
-              { folder: "test", resource_type: "raw" },
+              { folder: "test", resource_type: "auto" },
               (error, result) => {
                 if (error) reject(error);
                 else resolve(result as CloudinaryUploadResponse);

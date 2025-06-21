@@ -186,6 +186,50 @@ export default function DashboardPage() {
       return;
     }
 
+    // Define allowed file types
+    const allowedTypes = [
+      // Images
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+      "image/svg+xml",
+      // Videos
+      "video/mp4",
+      "video/avi",
+      "video/mov",
+      "video/wmv",
+      "video/flv",
+      "video/webm",
+      "video/x-matroska",
+      "video/3gpp",
+      // Audio
+      "audio/mpeg",
+      "audio/wav",
+      "audio/ogg",
+      "audio/mp4",
+      "audio/aac",
+      // Documents
+      "application/pdf",
+    ];
+
+    // Check for unsupported file types
+    const unsupportedFiles = files.filter(
+      (file) => !allowedTypes.includes(file.type)
+    );
+
+    if (unsupportedFiles.length > 0) {
+      const unsupportedNames = unsupportedFiles
+        .map((file) => file.name)
+        .join(", ");
+      toast.error(
+        `Unsupported file type(s): ${unsupportedNames}. Only PDFs, images, videos, and audio files are allowed.`
+      );
+      return;
+    }
+
     const totalSize = files.reduce((sum, file) => sum + file.size, 0);
     const currentStorageUsed = usageDetails?.storageUsed || 0;
     const availableStorage = STORAGE_LIMIT_BYTES - currentStorageUsed;
@@ -436,7 +480,7 @@ export default function DashboardPage() {
       link.click();
       document.body.removeChild(link);
 
-      toast.success(`Downloading ${file.fileName}...`);
+      // toast.success(`Downloading ${file.fileName}...`);
     } catch (error) {
       console.error("Failed to download file:", error);
       toast.error("Failed to download file");
@@ -644,6 +688,7 @@ export default function DashboardPage() {
                         <input
                           type="file"
                           multiple
+                          accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.svg,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp,.mp3,.wav,.ogg,.m4a"
                           onChange={handleFileSelect}
                           className="hidden"
                           id="file-upload"
