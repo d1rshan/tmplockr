@@ -1,8 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+
 import db from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 
 export async function GET() {
   try {

@@ -1,40 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  FileIcon,
-  FileTextIcon,
-  ImageIcon,
-  UploadIcon,
-  X,
-  HardDrive,
-  FileText,
-  Trash2,
-  Copy,
-  Download,
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { UserButton } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
+import { UsageDetailsCard } from "@/components/dashboard/UsageDetailsCard";
+import { UploadCard } from "@/components/dashboard/UploadCard";
+import { UploadsListCard } from "@/components/dashboard/UploadsListCard";
+import { NoteDetailDialog } from "@/components/dashboard/NoteDetailDialog";
+import { formatDate } from "@/lib/utils";
 
 interface Note {
   id: number;
@@ -345,21 +318,23 @@ export default function DashboardPage() {
     }
   };
 
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Open note detail modal
+  const openNoteModal = (note: Note) => {
+    setSelectedNote(note);
+    setIsNoteModalOpen(true);
+  };
 
-    if (diffDays === 1) return "Today";
-    if (diffDays === 2) return "Yesterday";
-    if (diffDays <= 7) return `${diffDays - 1} days ago`;
+  // Copy note content to clipboard
+  const copyNoteContent = async () => {
+    if (!selectedNote) return;
 
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+    try {
+      await navigator.clipboard.writeText(selectedNote.content);
+      toast.success("Note content copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy content:", error);
+      toast.error("Failed to copy content");
+    }
   };
 
   // Custom confirmation using toast
@@ -437,25 +412,6 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error deleting note:", error);
       toast.error("Failed to delete note");
-    }
-  };
-
-  // Open note detail modal
-  const openNoteModal = (note: Note) => {
-    setSelectedNote(note);
-    setIsNoteModalOpen(true);
-  };
-
-  // Copy note content to clipboard
-  const copyNoteContent = async () => {
-    if (!selectedNote) return;
-
-    try {
-      await navigator.clipboard.writeText(selectedNote.content);
-      toast.success("Note content copied to clipboard!");
-    } catch (error) {
-      console.error("Failed to copy content:", error);
-      toast.error("Failed to copy content");
     }
   };
 
@@ -543,585 +499,59 @@ export default function DashboardPage() {
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
             </div>
-            {/* TODO: Sign out button */}
-            {/* <Button variant="outline" size="sm">
-              Sign Out
-            </Button> */}
             <UserButton />
           </div>
         </div>
       </header>
-
       <main className="container mx-auto py-8 px-4">
         <div className="grid gap-6">
-          {/* Usage Details Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Usage Details</CardTitle>
-              <CardDescription>
-                Your current storage and note usage
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* File Storage Usage */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <HardDrive className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-slate-900">
-                        File Storage
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        {usageData.files.used.toFixed(2)}/
-                        {usageData.files.limit} {usageData.files.unit} used
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Storage Usage</span>
-                      <span className="text-sm text-slate-500">
-                        {Math.round(
-                          (usageData.files.used / usageData.files.limit) * 100
-                        )}
-                        %
-                      </span>
-                    </div>
-                    <Progress
-                      value={
-                        (usageData.files.used / usageData.files.limit) * 100
-                      }
-                      className="h-2"
-                    />
-                    <p className="text-xs text-slate-400">
-                      {(usageData.files.limit - usageData.files.used).toFixed(
-                        2
-                      )}{" "}
-                      {usageData.files.unit} remaining
-                    </p>
-                  </div>
-                </div>
-
-                {/* Notes Usage */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-100 p-2 rounded-lg">
-                      <FileText className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-slate-900">Notes</h3>
-                      <p className="text-sm text-slate-500">
-                        {notes.length}/{usageData.notes.limit}{" "}
-                        {usageData.notes.unit}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Note Usage</span>
-                      <span className="text-sm text-slate-500">
-                        {Math.round(
-                          (notes.length / usageData.notes.limit) * 100
-                        )}
-                        %
-                      </span>
-                    </div>
-                    <Progress
-                      value={(notes.length / usageData.notes.limit) * 100}
-                      className="h-2"
-                    />
-                    <p className="text-xs text-slate-400">
-                      {usageData.notes.limit - notes.length}{" "}
-                      {usageData.notes.unit} remaining
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload</CardTitle>
-              <CardDescription>
-                Add new files, images or text to your vault
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                defaultValue="files"
-                value={activeTab}
-                onValueChange={setActiveTab}
-              >
-                <TabsList className="grid grid-cols-2 mb-6">
-                  <TabsTrigger value="files">Files</TabsTrigger>
-                  <TabsTrigger value="text">Text</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="files" className="space-y-4">
-                  <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      isDragOver
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-slate-200"
-                    }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="bg-slate-100 p-3 rounded-full">
-                        <UploadIcon className="h-6 w-6 text-slate-600" />
-                      </div>
-                      <h3 className="font-medium text-slate-900">
-                        {isDragOver
-                          ? "Drop files here"
-                          : "Drag files here or click to upload"}
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        Support for documents, PDFs, images, and more
-                      </p>
-                      <div className="flex flex-col gap-2 mt-2">
-                        <input
-                          type="file"
-                          multiple
-                          accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.svg,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp,.mp3,.wav,.ogg,.m4a"
-                          onChange={handleFileSelect}
-                          className="hidden"
-                          id="file-upload"
-                        />
-                        <label htmlFor="file-upload">
-                          <Button
-                            disabled={isUploading}
-                            className="cursor-pointer"
-                            asChild
-                          >
-                            <span>Select Files</span>
-                          </Button>
-                        </label>
-                        {usageDetails && (
-                          <p className="text-xs text-slate-400">
-                            Available storage:{" "}
-                            {formatFileSize(
-                              STORAGE_LIMIT_BYTES - usageDetails.storageUsed
-                            )}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {selectedFiles.length > 0 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-slate-900">
-                          Selected Files:
-                        </h4>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedFiles([])}
-                          className="text-slate-500 hover:text-slate-700"
-                        >
-                          Clear Selection
-                        </Button>
-                      </div>
-                      <div className="space-y-2">
-                        {selectedFiles.map((file, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="bg-slate-100 p-2 rounded">
-                                {file.type.startsWith("image/") ? (
-                                  <ImageIcon className="h-4 w-4 text-slate-600" />
-                                ) : (
-                                  <FileIcon className="h-4 w-4 text-slate-600" />
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium">
-                                  {file.name}
-                                </p>
-                                <p className="text-xs text-slate-500">
-                                  {formatFileSize(file.size)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={handleFileUpload}
-                          disabled={isUploading}
-                          className="flex-1"
-                        >
-                          {isUploading
-                            ? "Uploading..."
-                            : `Upload ${selectedFiles.length} File${
-                                selectedFiles.length > 1 ? "s" : ""
-                              }`}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {isUploading && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          Uploading...
-                        </span>
-                        <span className="text-sm text-slate-500">
-                          {uploadProgress}%
-                        </span>
-                      </div>
-                      <Progress value={uploadProgress} />
-                    </div>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="text" className="space-y-4">
-                  <div className="space-y-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="note-title">Title</Label>
-                      <Input
-                        id="note-title"
-                        placeholder="Enter a title for your note"
-                        value={noteTitle}
-                        onChange={(e) => setNoteTitle(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="note-content">Content</Label>
-                      <Textarea
-                        id="note-content"
-                        placeholder="Type your note here..."
-                        className="min-h-[200px]"
-                        value={noteContent}
-                        onChange={(e) => setNoteContent(e.target.value)}
-                      />
-                    </div>
-                    <Button
-                      onClick={handleSaveNote}
-                      disabled={
-                        isSavingNote ||
-                        !noteTitle.trim() ||
-                        !noteContent.trim() ||
-                        notes.length >= usageData.notes.limit
-                      }
-                    >
-                      {isSavingNote ? "Saving..." : "Save Note"}
-                    </Button>
-                    {notes.length >= usageData.notes.limit && (
-                      <p className="text-sm text-red-500 text-center">
-                        You've reached the maximum limit of{" "}
-                        {usageData.notes.limit} notes. Please delete some notes
-                        before creating new ones.
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Uploads</CardTitle>
-              <CardDescription>
-                All your files, images and notes in one place
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="all">
-                <TabsList className="grid grid-cols-3 mb-6">
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="files">Files</TabsTrigger>
-                  <TabsTrigger value="notes">Notes</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="all" className="space-y-4">
-                  <div className="rounded-md border">
-                    <div className="p-4 bg-slate-50 border-b">
-                      <h3 className="font-medium">Files </h3>
-                    </div>
-                    <div className="divide-y">
-                      {isLoadingFiles ? (
-                        <div className="p-4 text-center text-slate-500">
-                          Loading files...
-                        </div>
-                      ) : files.length === 0 ? (
-                        <div className="p-4 text-center text-slate-500">
-                          No files uploaded yet. Upload your first file!
-                        </div>
-                      ) : (
-                        files.map((file) => (
-                          <div
-                            key={file.id}
-                            className="flex items-center justify-between p-4"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="bg-slate-100 p-2 rounded">
-                                {file.fileType.startsWith("image/") ? (
-                                  <ImageIcon className="h-5 w-5 text-slate-600" />
-                                ) : (
-                                  <FileIcon className="h-5 w-5 text-slate-600" />
-                                )}
-                              </div>
-                              <div>
-                                <p className="font-medium">{file.fileName}</p>
-                                <p className="text-sm text-slate-500">
-                                  {formatFileSize(file.fileSize)} •{" "}
-                                  {formatDate(file.uploadedAt)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => downloadFile(file)}
-                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                                title="Download file"
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="rounded-md border">
-                    <div className="p-4 bg-slate-50 border-b">
-                      <h3 className="font-medium">Notes</h3>
-                    </div>
-                    <div className="divide-y">
-                      {isLoadingNotes ? (
-                        <div className="p-4 text-center text-slate-500">
-                          Loading notes...
-                        </div>
-                      ) : notes.length === 0 ? (
-                        <div className="p-4 text-center text-slate-500">
-                          No notes yet. Create your first note!
-                        </div>
-                      ) : (
-                        notes.map((note) => (
-                          <div
-                            key={note.id}
-                            className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
-                          >
-                            <div
-                              className="flex items-center gap-3 flex-1 cursor-pointer"
-                              onClick={() => openNoteModal(note)}
-                            >
-                              <div className="bg-slate-100 p-2 rounded">
-                                <FileTextIcon className="h-5 w-5 text-slate-600" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium">{note.title}</p>
-                                <p className="text-sm text-slate-500 truncate max-w-md">
-                                  {note.content}
-                                </p>
-                                <p className="text-xs text-slate-400 mt-1">
-                                  {formatDate(note.createdAt)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openNoteModal(note)}
-                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                              >
-                                <FileTextIcon className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteNote(note.id)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="files">
-                  <div className="rounded-md border">
-                    <div className="divide-y">
-                      {isLoadingFiles ? (
-                        <div className="p-4 text-center text-slate-500">
-                          Loading files...
-                        </div>
-                      ) : files.length === 0 ? (
-                        <div className="p-4 text-center text-slate-500">
-                          No files uploaded yet. Upload your first file!
-                        </div>
-                      ) : (
-                        files.map((file) => (
-                          <div
-                            key={file.id}
-                            className="flex items-center justify-between p-4"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="bg-slate-100 p-2 rounded">
-                                {file.fileType.startsWith("image/") ? (
-                                  <ImageIcon className="h-5 w-5 text-slate-600" />
-                                ) : (
-                                  <FileIcon className="h-5 w-5 text-slate-600" />
-                                )}
-                              </div>
-                              <div>
-                                <p className="font-medium">{file.fileName}</p>
-                                <p className="text-sm text-slate-500">
-                                  {formatFileSize(file.fileSize)} •{" "}
-                                  {formatDate(file.uploadedAt)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => downloadFile(file)}
-                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                                title="Download file"
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="notes">
-                  <div className="rounded-md border">
-                    <div className="divide-y">
-                      {isLoadingNotes ? (
-                        <div className="p-4 text-center text-slate-500">
-                          Loading notes...
-                        </div>
-                      ) : notes.length === 0 ? (
-                        <div className="p-4 text-center text-slate-500">
-                          No notes yet. Create your first note!
-                        </div>
-                      ) : (
-                        notes.map((note) => (
-                          <div
-                            key={note.id}
-                            className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
-                          >
-                            <div
-                              className="flex items-center gap-3 flex-1 cursor-pointer"
-                              onClick={() => openNoteModal(note)}
-                            >
-                              <div className="bg-slate-100 p-2 rounded">
-                                <FileTextIcon className="h-5 w-5 text-slate-600" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium">{note.title}</p>
-                                <p className="text-sm text-slate-500 truncate max-w-md">
-                                  {note.content}
-                                </p>
-                                <p className="text-xs text-slate-400 mt-1">
-                                  {formatDate(note.createdAt)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openNoteModal(note)}
-                                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                              >
-                                <FileTextIcon className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteNote(note.id)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+          <UsageDetailsCard usageData={usageData} />
+          <UploadCard
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isDragOver={isDragOver}
+            handleDragOver={handleDragOver}
+            handleDragLeave={handleDragLeave}
+            handleDrop={handleDrop}
+            handleFileSelect={handleFileSelect}
+            isUploading={isUploading}
+            selectedFiles={selectedFiles}
+            setSelectedFiles={setSelectedFiles}
+            handleFileUpload={handleFileUpload}
+            uploadProgress={uploadProgress}
+            usageDetails={usageDetails}
+            STORAGE_LIMIT_BYTES={STORAGE_LIMIT_BYTES}
+            formatFileSize={formatFileSize}
+            noteTitle={noteTitle}
+            setNoteTitle={setNoteTitle}
+            noteContent={noteContent}
+            setNoteContent={setNoteContent}
+            handleSaveNote={handleSaveNote}
+            isSavingNote={isSavingNote}
+            notes={notes}
+            usageData={usageData}
+          />
+          <UploadsListCard
+            files={files}
+            notes={notes}
+            isLoadingFiles={isLoadingFiles}
+            isLoadingNotes={isLoadingNotes}
+            formatFileSize={formatFileSize}
+            formatDate={formatDate}
+            downloadFile={downloadFile}
+            openNoteModal={openNoteModal}
+            handleDeleteNote={handleDeleteNote}
+          />
         </div>
       </main>
-
-      {/* Note Detail Modal */}
-      <Dialog open={isNoteModalOpen} onOpenChange={setIsNoteModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileTextIcon className="h-5 w-5 text-slate-600" />
-              {selectedNote?.title}
-            </DialogTitle>
-            <p className="text-sm text-slate-500">
-              Created {selectedNote && formatDate(selectedNote.createdAt)}
-            </p>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="bg-slate-50 rounded-lg p-4 max-h-64 overflow-y-auto">
-              <p className="text-slate-700 whitespace-pre-wrap">
-                {selectedNote?.content}
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={copyNoteContent}
-              className="flex items-center gap-2"
-            >
-              <Copy className="h-4 w-4" />
-              Copy Content
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => selectedNote && handleDeleteNote(selectedNote.id)}
-              className="flex items-center gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete Note
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <NoteDetailDialog
+        isOpen={isNoteModalOpen}
+        onOpenChange={setIsNoteModalOpen}
+        selectedNote={selectedNote}
+        formatDate={formatDate}
+        copyNoteContent={copyNoteContent}
+        handleDeleteNote={handleDeleteNote}
+      />
     </div>
   );
 }
