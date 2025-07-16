@@ -55,7 +55,7 @@ export async function GET() {
       .from(notes)
       .where(eq(notes.clerkUserId, userId));
 
-    return NextResponse.json(notesList, { status: 200 });
+    return NextResponse.json(notesList, { status: 201 });
   } catch (error) {
     console.log("ERROR FETCHING NOTES FROM DB", error);
     return NextResponse.json(
@@ -75,22 +75,25 @@ export async function DELETE(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id } = body;
+    const { id: noteId } = body;
 
-    if (!id) {
+    if (!noteId) {
       return NextResponse.json(
         { error: "Note ID is required" },
         { status: 400 }
       );
     }
 
-    const result = await db.delete(notes).where(eq(notes.id, id)).returning();
+    const result = await db
+      .delete(notes)
+      .where(eq(notes.id, noteId))
+      .returning();
 
     if (result.length === 0) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result[0], { status: 200 });
+    return NextResponse.json(result[0], { status: 201 });
   } catch (error) {
     console.log("ERROR DELETING NOTE FROM DB", error);
     return NextResponse.json({ error: "Error deleting note" }, { status: 500 });

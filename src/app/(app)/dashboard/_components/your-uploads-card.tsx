@@ -9,9 +9,15 @@ import {
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { Note } from "@/lib/db/schema";
-import { FileIcon, FileTextIcon, X } from "lucide-react";
+import { FileIcon, FileTextIcon, Trash2, X } from "lucide-react";
 
-export const YourUploadsCard = ({ notes }: { notes: Note[] }) => {
+export const YourUploadsCard = ({
+  notes,
+  deleteNote,
+}: {
+  notes: Note[];
+  deleteNote: (id: number) => Promise<void>;
+}) => {
   const files = [
     {
       id: 1,
@@ -96,13 +102,14 @@ export const YourUploadsCard = ({ notes }: { notes: Note[] }) => {
                         <p className="text-sm text-slate-500 truncate max-w-md">
                           {note.content}
                         </p>
-                        {/* <p className="text-xs text-slate-400 mt-1">
-                          {note.date}
-                        </p> */}
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon">
-                      <X className="h-4 w-4" />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteNote(note.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
                 ))}

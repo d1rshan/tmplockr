@@ -33,7 +33,13 @@ const createNoteFormSchema = z.object({
 export const UploadCard = ({
   createNote,
 }: {
-  createNote: ({ title, content }: { title: string; content: string }) => void;
+  createNote: ({
+    title,
+    content,
+  }: {
+    title: string;
+    content: string;
+  }) => Promise<void>;
 }) => {
   const form = useForm<z.infer<typeof createNoteFormSchema>>({
     resolver: zodResolver(createNoteFormSchema),

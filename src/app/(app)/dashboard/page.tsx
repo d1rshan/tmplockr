@@ -25,6 +25,7 @@ export default function DashboardPage() {
       toast.error("Failed to fetch notes");
     }
   };
+
   const createNote = async ({
     title,
     content,
@@ -42,7 +43,16 @@ export default function DashboardPage() {
     }
   };
 
-  // const deleteNote = () => {};
+  const deleteNote = async (id: number) => {
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+    const res = await axios.delete("/api/notes", { data: { id } });
+
+    if (res.status === 201) {
+      toast.success("Deleted note");
+    } else {
+      toast.error("Failed to delete note");
+    }
+  };
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b">
@@ -63,7 +73,7 @@ export default function DashboardPage() {
       <main className="container mx-auto py-8 px-4">
         <div className="grid gap-6">
           <UploadCard createNote={createNote} />
-          <YourUploadsCard notes={notes} />
+          <YourUploadsCard notes={notes} deleteNote={deleteNote} />
         </div>
       </main>
     </div>
