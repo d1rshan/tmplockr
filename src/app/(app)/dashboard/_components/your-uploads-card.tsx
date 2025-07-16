@@ -14,9 +14,11 @@ import { FileIcon, FileTextIcon, Trash2, X } from "lucide-react";
 export const YourUploadsCard = ({
   notes,
   deleteNote,
+  isDeletingNote,
 }: {
   notes: Note[];
   deleteNote: (id: number) => Promise<void>;
+  isDeletingNote: boolean;
 }) => {
   const files = [
     {
@@ -108,6 +110,7 @@ export const YourUploadsCard = ({
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteNote(note.id)}
+                      disabled={isDeletingNote}
                     >
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>

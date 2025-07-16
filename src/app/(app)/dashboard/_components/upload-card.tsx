@@ -32,6 +32,7 @@ const createNoteFormSchema = z.object({
 
 export const UploadCard = ({
   createNote,
+  isSavingNote,
 }: {
   createNote: ({
     title,
@@ -40,6 +41,7 @@ export const UploadCard = ({
     title: string;
     content: string;
   }) => Promise<void>;
+  isSavingNote: boolean;
 }) => {
   const form = useForm<z.infer<typeof createNoteFormSchema>>({
     resolver: zodResolver(createNoteFormSchema),
@@ -49,12 +51,6 @@ export const UploadCard = ({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof createNoteFormSchema>) {
-    setIsSavingNote(true);
-    await createNote(values);
-    setIsSavingNote(false);
-  }
-  const [isSavingNote, setIsSavingNote] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -126,7 +122,7 @@ export const UploadCard = ({
           <TabsContent value="text" className="space-y-4">
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(createNote)}
                 className="space-y-4"
               >
                 <FormField

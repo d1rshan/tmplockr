@@ -10,6 +10,8 @@ import { toast } from "sonner";
 
 export default function DashboardPage() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [isDeletingNote, setIsDeletingNote] = useState(false);
+  const [isSavingNote, setIsSavingNote] = useState(false);
 
   useEffect(() => {
     fetchNotes();
@@ -33,6 +35,7 @@ export default function DashboardPage() {
     title: string;
     content: string;
   }) => {
+    setIsSavingNote(true);
     const res = await axios.post("/api/notes", { title, content });
 
     if (res.status === 201) {
@@ -41,25 +44,29 @@ export default function DashboardPage() {
     } else {
       toast.error("Failed to save note");
     }
+    setIsSavingNote(false);
   };
 
   const deleteNote = async (id: number) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
+    setIsDeletingNote(true);
     const res = await axios.delete("/api/notes", { data: { id } });
 
     if (res.status === 201) {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
       toast.success("Deleted note");
     } else {
       toast.error("Failed to delete note");
     }
+    setIsDeletingNote(false);
   };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b">
         <div className="container mx-auto py-4 px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
+              <h1 className="text-2xl font-bold text-slate-900">Tmplockr</h1>
             </div>
             {/* TODO: Sign out button */}
             {/* <Button variant="outline" size="sm">
@@ -72,8 +79,12 @@ export default function DashboardPage() {
 
       <main className="container mx-auto py-8 px-4">
         <div className="grid gap-6">
-          <UploadCard createNote={createNote} />
-          <YourUploadsCard notes={notes} deleteNote={deleteNote} />
+          <UploadCard createNote={createNote} isSavingNote={isSavingNote} />
+          <YourUploadsCard
+            notes={notes}
+            deleteNote={deleteNote}
+            isDeletingNote={isDeletingNote}
+          />
         </div>
       </main>
     </div>
