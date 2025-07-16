@@ -38,7 +38,6 @@ export const notes = pgTable("notes", {
   clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export type Note = typeof notes.$inferSelect;

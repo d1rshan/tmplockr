@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
+// Save note to db
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Get all notes
 export async function GET() {
   try {
     const { userId } = await auth();
@@ -63,6 +65,7 @@ export async function GET() {
   }
 }
 
+// Delete a note
 export async function DELETE(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -90,9 +93,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(result[0], { status: 200 });
   } catch (error) {
     console.log("ERROR DELETING NOTE FROM DB", error);
-    return NextResponse.json(
-      { error: "Error deleting note from db" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error deleting note" }, { status: 500 });
   }
 }
