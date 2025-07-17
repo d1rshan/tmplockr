@@ -1,65 +1,8 @@
-"use client";
-
 import { UserButton } from "@clerk/nextjs";
 import { UploadCard } from "./_components/upload-card";
 import { YourUploadsCard } from "./_components/your-uploads-card";
-import { useEffect, useState } from "react";
-import { Note } from "@/lib/db/schema";
-import axios from "axios";
-import { toast } from "sonner";
 
 export default function DashboardPage() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [isDeletingNote, setIsDeletingNote] = useState(false);
-  const [isSavingNote, setIsSavingNote] = useState(false);
-
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
-  const fetchNotes = async () => {
-    const res = await axios.get("/api/notes");
-
-    if (res.status === 201) {
-      setNotes(res.data);
-      toast.success("Fetched all notes");
-    } else {
-      toast.error("Failed to fetch notes");
-    }
-  };
-
-  const createNote = async ({
-    title,
-    content,
-  }: {
-    title: string;
-    content: string;
-  }) => {
-    setIsSavingNote(true);
-    const res = await axios.post("/api/notes", { title, content });
-
-    if (res.status === 201) {
-      setNotes((prev) => [...prev, res.data]);
-      toast.success("Note saved");
-    } else {
-      toast.error("Failed to save note");
-    }
-    setIsSavingNote(false);
-  };
-
-  const deleteNote = async (id: number) => {
-    setIsDeletingNote(true);
-    const res = await axios.delete("/api/notes", { data: { id } });
-
-    if (res.status === 201) {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
-      toast.success("Deleted note");
-    } else {
-      toast.error("Failed to delete note");
-    }
-    setIsDeletingNote(false);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b">
@@ -79,12 +22,8 @@ export default function DashboardPage() {
 
       <main className="container mx-auto py-8 px-4">
         <div className="grid gap-6">
-          <UploadCard createNote={createNote} isSavingNote={isSavingNote} />
-          <YourUploadsCard
-            notes={notes}
-            deleteNote={deleteNote}
-            isDeletingNote={isDeletingNote}
-          />
+          <UploadCard />
+          <YourUploadsCard />
         </div>
       </main>
     </div>

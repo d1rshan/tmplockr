@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,18 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
-import { Note } from "@/lib/db/schema";
+import { useNotesStore } from "@/stores/notesStore";
 import { FileIcon, FileTextIcon, Trash2, X } from "lucide-react";
+import { useEffect } from "react";
 
-export const YourUploadsCard = ({
-  notes,
-  deleteNote,
-  isDeletingNote,
-}: {
-  notes: Note[];
-  deleteNote: (id: number) => Promise<void>;
-  isDeletingNote: boolean;
-}) => {
+export const YourUploadsCard = () => {
   const files = [
     {
       id: 1,
@@ -43,6 +37,12 @@ export const YourUploadsCard = ({
       date: "Jun 10",
     },
   ];
+
+  const { notes, isDeleting, deleteNote, fetchNotes } = useNotesStore();
+
+  useEffect(() => {
+    fetchNotes();
+  }, [fetchNotes]);
 
   return (
     <Card>
@@ -110,7 +110,7 @@ export const YourUploadsCard = ({
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteNote(note.id)}
-                      disabled={isDeletingNote}
+                      disabled={isDeleting}
                     >
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>

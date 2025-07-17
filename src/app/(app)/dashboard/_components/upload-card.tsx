@@ -1,5 +1,4 @@
 "use client";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -9,70 +8,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, UploadIcon } from "lucide-react";
+import {
+  FileIcon,
+  FileTextIcon,
+  ImageIcon,
+  Loader2,
+  UploadIcon,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { upload } from "@imagekit/next";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
+import { CreateNoteTab } from "./create-note-tab";
 
-const createNoteFormSchema = z.object({
-  title: z.string().min(1, { error: "Title is required" }),
-  content: z.string().min(1, { error: "Content is required" }),
-});
-
-export const UploadCard = ({
-  createNote,
-  isSavingNote,
-}: {
-  createNote: ({
-    title,
-    content,
-  }: {
-    title: string;
-    content: string;
-  }) => Promise<void>;
-  isSavingNote: boolean;
-}) => {
-  const form = useForm<z.infer<typeof createNoteFormSchema>>({
-    resolver: zodResolver(createNoteFormSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-    },
-  });
-
-  const { reset } = form;
-
-  const onSubmit = async (values: z.infer<typeof createNoteFormSchema>) => {
-    await createNote(values);
-    reset();
-  };
-
+export const UploadCard = () => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const [acceptedFiles, setAcceptedFiles] = useState<File[] | null>(null);
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback((files: File[]) => {
-    // Do something with the files
-    setAcceptedFiles(files);
-  }, []);
-  const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
-    onDrop,
-  });
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const selectedFiles = Array.from(event.target.files);
+      setAcceptedFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone();
   const authenticator = async () => {
     try {
       const response = await fetch("/api/imagekit-auth");
@@ -92,14 +57,16 @@ export const UploadCard = ({
     }
   };
 
+  const handleRemoveFile = (index: number) => {
+    setAcceptedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
   const handleUpload = async () => {
-    const fileInput = inputRef.current;
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-      alert("Please select a file to upload");
-      return;
+    if (!acceptedFiles || acceptedFiles.length === 0) {
+      toast.error("Please select file to upload");
     }
     setIsUploading(true);
-    for (const file of fileInput.files) {
+    for (const file of acceptedFiles) {
       let authParams;
       try {
         authParams = await authenticator();
@@ -130,6 +97,7 @@ export const UploadCard = ({
       }
     }
     setIsUploading(false);
+    setAcceptedFiles([]);
   };
   return (
     <Card>
@@ -151,7 +119,7 @@ export const UploadCard = ({
               className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center"
               {...getRootProps()}
             >
-              <Input {...getInputProps()} />
+              <Input {...getInputProps()} onChange={handleFileChange} />
 
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-slate-100 p-3 rounded-full">
@@ -169,8 +137,12 @@ export const UploadCard = ({
                 </p>
               </div>
             </div>
-            <Button className="mt-2" onClick={handleUpload}>
-              Upload
+            <Button
+              className="mt-2"
+              onClick={handleUpload}
+              disabled={isUploading}
+            >
+              {isUploading ? <Loader2 className="animate-spin" /> : "Upload"}
             </Button>
             {isUploading && (
               <div className="space-y-2">
@@ -183,65 +155,47 @@ export const UploadCard = ({
                 <Progress value={progress} max={100} />
               </div>
             )}
-            {acceptedFiles && (
-              <div className="space-y-2">
-                {acceptedFiles.map((acceptedFile) => (
-                  <div key={acceptedFile.name}>{acceptedFile.name}</div>
-                ))}
+            {acceptedFiles.length > 0 && (
+              <div className="rounded-md border">
+                <div className="divide-y">
+                  {acceptedFiles.map((file, i) => (
+                    <div
+                      key={file.name}
+                      className="flex items-center justify-between p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="bg-slate-100 p-2 rounded">
+                          {file.type.includes("image") ? (
+                            <ImageIcon />
+                          ) : file.type.includes("txt") ? (
+                            <FileTextIcon />
+                          ) : (
+                            <FileIcon />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium">{file.name}</p>
+                          <p className="text-sm text-slate-500 truncate max-w-md">
+                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveFile(i)}
+                        disabled={isUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </TabsContent>
-
           <TabsContent value="text" className="space-y-4">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter a title for your note"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Content</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          id="note-content"
-                          placeholder="Type your note here..."
-                          className="min-h-[200px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isSavingNote}>
-                  {isSavingNote ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    "Save Note"
-                  )}
-                </Button>
-              </form>
-            </Form>
+            <CreateNoteTab />
           </TabsContent>
         </Tabs>
       </CardContent>
