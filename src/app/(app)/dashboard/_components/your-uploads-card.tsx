@@ -9,40 +9,23 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
+import { useFilesStore } from "@/stores/filesStore";
 import { useNotesStore } from "@/stores/notesStore";
-import { FileIcon, FileTextIcon, Trash2, X } from "lucide-react";
+import { FileIcon, FileTextIcon, Link2, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export const YourUploadsCard = () => {
-  const files = [
-    {
-      id: 1,
-      name: "presentation.pdf",
-      type: "file",
-      size: "2.4 MB",
-      date: "Today",
-    },
-    {
-      id: 2,
-      name: "document.docx",
-      type: "file",
-      size: "1.2 MB",
-      date: "Yesterday",
-    },
-    {
-      id: 3,
-      name: "screenshot.png",
-      type: "image",
-      size: "0.8 MB",
-      date: "Jun 10",
-    },
-  ];
-
+  const { files, fetchFiles } = useFilesStore();
   const { notes, isDeleting, deleteNote, fetchNotes } = useNotesStore();
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    const fetchData = async () => {
+      await fetchNotes();
+      await fetchFiles();
+    };
+    fetchData();
+  }, [fetchNotes, fetchFiles]);
 
   return (
     <Card>
@@ -72,15 +55,28 @@ export const YourUploadsCard = () => {
                         <FileIcon className="h-5 w-5 text-slate-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{file.name}</p>
+                        <p className="font-medium">{file.fileName}</p>
                         <p className="text-sm text-slate-500">
-                          {file.size} • {file.date}
+                          {(file.fileSize / (1024 * 1024)).toFixed(2)} MB
                         </p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon">
-                      <X className="h-4 w-4" />
-                    </Button>
+
+                    <div className="flex gap-x-2 items-center">
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link
+                          href={file.publicId}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Link2 />
+                        </Link>
+                      </Button>
+
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
