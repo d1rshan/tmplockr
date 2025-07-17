@@ -21,13 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${poppins.className} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${poppins.className} antialiased`}>
+        <ClerkProvider>
           {children}
           <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

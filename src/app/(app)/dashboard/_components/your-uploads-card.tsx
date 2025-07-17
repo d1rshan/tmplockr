@@ -11,9 +11,10 @@ import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { useFilesStore } from "@/stores/filesStore";
 import { useNotesStore } from "@/stores/notesStore";
-import { FileIcon, FileTextIcon, Link2, Trash2 } from "lucide-react";
+import { Download, FileIcon, FileTextIcon, Link2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { saveAs } from "file-saver";
 
 export const YourUploadsCard = () => {
   const { files, fetchFiles } = useFilesStore();
@@ -71,6 +72,15 @@ export const YourUploadsCard = () => {
                         >
                           <Link2 />
                         </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          saveAs(file.publicId, file.fileName);
+                        }}
+                      >
+                        <Download />
                       </Button>
 
                       <Button variant="ghost" size="icon">

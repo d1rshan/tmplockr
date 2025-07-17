@@ -1,3 +1,4 @@
+"use client";
 import {
   FileIcon,
   FileTextIcon,
@@ -83,7 +84,7 @@ const FileUploadTab = () => {
         console.log("Upload response:", res);
 
         await addFile({
-          fileName: res.name!,
+          fileName: file.name,
           fileSize: res.size!,
           fileType: res.fileType!,
           publicId: res.url!,
