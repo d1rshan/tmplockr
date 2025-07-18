@@ -17,7 +17,7 @@ interface FilesState {
     fileType: string;
     publicId: string;
   }) => Promise<void>;
-  //   deleteFile: (file: File) => Promise<void>;
+  deleteFile: (fileId: string) => Promise<void>;
   fetchFiles: () => Promise<void>;
 }
 
@@ -52,6 +52,26 @@ export const useFilesStore = create<FilesState>((set) => ({
     } catch (error) {
       console.log("Error fetching files from neondb", error);
       toast.error("Failed to fetch files");
+    }
+  },
+  deleteFile: async (fileId) => {
+    set({ isDeletingFile: true });
+    try {
+      const res = await axios.delete("/api/files", { data: { fileId } });
+
+      if (res.status === 201) {
+        set((state) => ({
+          files: state.files.filter((file) => file.id !== fileId),
+        }));
+        toast.success("Deleted file");
+      } else {
+        toast.error("Failed to delete file");
+      }
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+      toast.error("Unknown error occured");
+    } finally {
+      set({ isDeletingFile: false });
     }
   },
 }));

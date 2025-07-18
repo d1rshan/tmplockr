@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/nextjs";
+import { SignoutButton } from "./_components/signout-button";
 import { UploadCard } from "./_components/upload-card";
 import { YourUploadsCard } from "./_components/your-uploads-card";
 
@@ -12,10 +12,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold text-slate-900">Tmplockr</h1>
             </div>
             {/* TODO: Sign out button */}
-            {/* <Button variant="outline" size="sm">
-              Sign Out
-            </Button> */}
-            <UserButton />
+            <SignoutButton />
           </div>
         </div>
       </header>

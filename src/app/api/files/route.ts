@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import db from "@/lib/db";
 import { files } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
@@ -126,5 +126,31 @@ export async function GET() {
       { error: "Error fetching files" },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const { fileId } = body;
+
+    const res = await db
+      .delete(files)
+      .where(and(eq(files.clerkUserId, userId), eq(files.id, fileId)))
+      .returning();
+
+    if (res.length === 0) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+    return NextResponse.json(res[0], { status: 201 });
+  } catch (error) {
+    console.error("Error deleting file", error);
+    return NextResponse.json({ error: "Error deleting file" }, { status: 500 });
   }
 }

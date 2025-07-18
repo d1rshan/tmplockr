@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { saveAs } from "file-saver";
 
 export const YourUploadsCard = () => {
-  const { files, fetchFiles } = useFilesStore();
+  const { files, fetchFiles, isDeletingFile, deleteFile } = useFilesStore();
   const { notes, isDeleting, deleteNote, fetchNotes } = useNotesStore();
 
   useEffect(() => {
@@ -83,7 +83,12 @@ export const YourUploadsCard = () => {
                         <Download />
                       </Button>
 
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteFile(file.id)}
+                        disabled={isDeletingFile}
+                      >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
