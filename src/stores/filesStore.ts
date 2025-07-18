@@ -10,27 +10,36 @@ interface FilesState {
     fileName,
     fileSize,
     fileType,
-    publicId,
+    imagekitUrl,
+    imagekitId,
   }: {
     fileName: string;
     fileSize: number;
     fileType: string;
-    publicId: string;
+    imagekitUrl: string;
+    imagekitId: string;
   }) => Promise<void>;
-  deleteFile: (fileId: number) => Promise<void>;
+  deleteFile: (fileId: number, publicId: string) => Promise<void>;
   fetchFiles: () => Promise<void>;
 }
 
 export const useFilesStore = create<FilesState>((set) => ({
   files: [],
   isDeletingFile: null,
-  addFile: async ({ fileName, fileSize, fileType, publicId }) => {
+  addFile: async ({
+    fileName,
+    fileSize,
+    fileType,
+    imagekitId,
+    imagekitUrl,
+  }) => {
     try {
       const res = await axios.post("/api/files", {
         fileName,
         fileSize,
         fileType,
-        publicId,
+        imagekitId,
+        imagekitUrl,
       });
 
       if (res.status === 201) {
@@ -53,10 +62,12 @@ export const useFilesStore = create<FilesState>((set) => ({
       toast.error("Failed to fetch files");
     }
   },
-  deleteFile: async (fileId) => {
+  deleteFile: async (fileId, imagekitId) => {
     set({ isDeletingFile: fileId });
     try {
-      const res = await axios.delete("/api/files", { data: { fileId } });
+      const res = await axios.delete("/api/files", {
+        data: { fileId, imagekitId },
+      });
 
       if (res.status === 201) {
         set((state) => ({

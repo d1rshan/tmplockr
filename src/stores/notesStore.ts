@@ -51,7 +51,9 @@ export const useNotesStore = create<NotesState>((set) => ({
     set({ isDeletingNote: noteId });
 
     try {
-      const res = await axios.delete("/api/notes", { data: { noteId } });
+      const res = await axios.delete("/api/notes", {
+        data: { noteId },
+      });
 
       if (res.status === 201) {
         set((state) => ({

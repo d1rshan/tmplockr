@@ -87,7 +87,8 @@ const FileUploadTab = () => {
           fileName: file.name,
           fileSize: res.size!,
           fileType: res.fileType!,
-          publicId: res.url!,
+          imagekitUrl: res.url!,
+          imagekitId: res.fileId!,
         });
 
         toast.success(`${file.name} uploaded`);

@@ -16,7 +16,8 @@ export const files = pgTable("files", {
   fileName: text("file_name").notNull(),
   fileSize: integer("file_size").notNull(), // in bytes
   fileType: varchar("file_type", { length: 100 }).notNull(),
-  publicId: varchar("public_id", { length: 255 }).notNull(), // Cloudinary ID
+  imagekitUrl: varchar("imagekit_url", { length: 255 }).notNull(), // Imagekit url
+  imagekitId: varchar("imagekit_id", { length: 255 }).notNull(), // Imagekit file id
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 

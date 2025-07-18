@@ -66,7 +66,7 @@ export const YourUploadsCard = () => {
                     <div className="flex gap-x-2 items-center">
                       <Button variant="ghost" size="icon" asChild>
                         <Link
-                          href={file.publicId}
+                          href={file.imagekitUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -77,7 +77,7 @@ export const YourUploadsCard = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          saveAs(file.publicId, file.fileName);
+                          saveAs(file.imagekitUrl, file.fileName);
                         }}
                       >
                         <Download />
@@ -86,7 +86,7 @@ export const YourUploadsCard = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => deleteFile(file.id)}
+                        onClick={() => deleteFile(file.id, file.imagekitId)}
                         disabled={isDeletingFile === file.id}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
