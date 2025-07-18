@@ -29,6 +29,13 @@
       "when": 1752659141777,
       "tag": "0003_robust_king_bedlam",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752824015760,
+      "tag": "0004_unique_magneto",
+      "breakpoints": true
     }
   ]
 }

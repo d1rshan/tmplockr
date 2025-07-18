@@ -2,7 +2,6 @@
 
 import {
   pgTable,
-  uuid,
   text,
   timestamp,
   integer,
@@ -10,18 +9,9 @@ import {
   serial,
 } from "drizzle-orm/pg-core";
 
-// Users table (assuming you're managing Clerk user IDs or something similar)
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(), // Main PK
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull().unique(),
-  storageUsed: integer("storage_used").notNull().default(0),
-});
-
-export type User = typeof users.$inferSelect;
-
 // Files table
 export const files = pgTable("files", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: serial("id").primaryKey(),
   clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
   fileName: text("file_name").notNull(),
   fileSize: integer("file_size").notNull(), // in bytes

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 interface NotesState {
   notes: Note[];
   isSaving: boolean;
-  isDeleting: boolean;
+  isDeletingNote: number | null;
   addNote: ({
     title,
     content,
@@ -23,7 +23,7 @@ export const useNotesStore = create<NotesState>((set) => ({
   // --- STATE ---
   notes: [],
   isSaving: false,
-  isDeleting: false,
+  isDeletingNote: null,
 
   // --- ACTIONS ---
   addNote: async ({ title, content }) => {
@@ -47,15 +47,15 @@ export const useNotesStore = create<NotesState>((set) => ({
   },
 
   // Action to delete a note
-  deleteNote: async (id) => {
-    set({ isDeleting: true });
+  deleteNote: async (noteId) => {
+    set({ isDeletingNote: noteId });
 
     try {
-      const res = await axios.delete("/api/notes", { data: { id } });
+      const res = await axios.delete("/api/notes", { data: { noteId } });
 
       if (res.status === 201) {
         set((state) => ({
-          notes: state.notes.filter((note) => note.id !== id),
+          notes: state.notes.filter((note) => note.id !== noteId),
         }));
         toast.success("Deleted note");
       } else {
@@ -65,7 +65,7 @@ export const useNotesStore = create<NotesState>((set) => ({
       console.error("Failed to delete note:", error);
       toast.error("Unknown error occured");
     } finally {
-      set({ isDeleting: false });
+      set({ isDeletingNote: null });
     }
   },
   fetchNotes: async () => {

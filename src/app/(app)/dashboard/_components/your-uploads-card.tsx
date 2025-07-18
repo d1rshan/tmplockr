@@ -18,7 +18,7 @@ import { saveAs } from "file-saver";
 
 export const YourUploadsCard = () => {
   const { files, fetchFiles, isDeletingFile, deleteFile } = useFilesStore();
-  const { notes, isDeleting, deleteNote, fetchNotes } = useNotesStore();
+  const { notes, isDeletingNote, deleteNote, fetchNotes } = useNotesStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +87,7 @@ export const YourUploadsCard = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => deleteFile(file.id)}
-                        disabled={isDeletingFile}
+                        disabled={isDeletingFile === file.id}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
@@ -121,7 +121,7 @@ export const YourUploadsCard = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteNote(note.id)}
-                      disabled={isDeleting}
+                      disabled={isDeletingNote === note.id}
                     >
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>

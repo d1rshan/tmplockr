@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 interface FilesState {
   files: File[]; // here File represents the drizzle's File schema
-  isDeletingFile: boolean;
+  isDeletingFile: number | null;
   addFile: ({
     fileName,
     fileSize,
@@ -17,16 +17,15 @@ interface FilesState {
     fileType: string;
     publicId: string;
   }) => Promise<void>;
-  deleteFile: (fileId: string) => Promise<void>;
+  deleteFile: (fileId: number) => Promise<void>;
   fetchFiles: () => Promise<void>;
 }
 
 export const useFilesStore = create<FilesState>((set) => ({
   files: [],
-  isDeletingFile: false,
+  isDeletingFile: null,
   addFile: async ({ fileName, fileSize, fileType, publicId }) => {
     try {
-      // const { fileName, fileSize, fileType, publicId } = body;
       const res = await axios.post("/api/files", {
         fileName,
         fileSize,
@@ -55,7 +54,7 @@ export const useFilesStore = create<FilesState>((set) => ({
     }
   },
   deleteFile: async (fileId) => {
-    set({ isDeletingFile: true });
+    set({ isDeletingFile: fileId });
     try {
       const res = await axios.delete("/api/files", { data: { fileId } });
 
@@ -71,7 +70,7 @@ export const useFilesStore = create<FilesState>((set) => ({
       console.error("Failed to delete note:", error);
       toast.error("Unknown error occured");
     } finally {
-      set({ isDeletingFile: false });
+      set({ isDeletingFile: null });
     }
   },
 }));
