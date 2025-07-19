@@ -9,6 +9,12 @@ import {
   serial,
 } from "drizzle-orm/pg-core";
 
+// Users table
+export const users = pgTable("users", {
+  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
+  storageUsed: integer("storage_used").notNull(),
+});
+
 // Files table
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
