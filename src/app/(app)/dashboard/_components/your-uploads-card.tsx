@@ -11,10 +11,18 @@ import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { useFilesStore } from "@/stores/filesStore";
 import { useNotesStore } from "@/stores/notesStore";
-import { Download, FileIcon, FileTextIcon, Link2, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Download,
+  FileIcon,
+  FileTextIcon,
+  Link2,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { saveAs } from "file-saver";
+import { toast } from "sonner";
 
 export const YourUploadsCard = () => {
   const { files, fetchFiles, isDeletingFile, deleteFile } = useFilesStore();
@@ -28,6 +36,15 @@ export const YourUploadsCard = () => {
     fetchData();
   }, [fetchNotes, fetchFiles]);
 
+  const copyNote = async (title: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${title} copied!`);
+    } catch (error) {
+      toast.error("Failed to copy");
+      console.log(error);
+    }
+  };
   return (
     <Card>
       <CardHeader>
@@ -118,14 +135,24 @@ export const YourUploadsCard = () => {
                           </p>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteNote(note.id)}
-                        disabled={isDeletingNote === note.id}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
+                      <div className="flex gap-x-2 items-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => copyNote(note.title, note.content)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteNote(note.id)}
+                          disabled={isDeletingNote === note.id}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
