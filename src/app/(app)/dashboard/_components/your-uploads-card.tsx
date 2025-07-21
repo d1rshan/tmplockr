@@ -42,94 +42,96 @@ export const YourUploadsCard = () => {
             <TabsTrigger value="files">Files</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="files">
-            <div className="rounded-md border">
-              <div className="divide-y">
-                {files.map((file) => (
-                  <div
-                    key={file.id}
-                    className="flex items-center justify-between p-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="bg-slate-100 p-2 rounded">
-                        <FileIcon className="h-5 w-5 text-slate-600" />
+          {files.length > 0 && (
+            <TabsContent value="files">
+              <div className="rounded-md border">
+                <div className="divide-y">
+                  {files.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center justify-between p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="bg-slate-100 p-2 rounded">
+                          <FileIcon className="h-5 w-5 text-slate-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{file.fileName}</p>
+                          <p className="text-sm text-slate-500">
+                            {(file.fileSize / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{file.fileName}</p>
-                        <p className="text-sm text-slate-500">
-                          {(file.fileSize / (1024 * 1024)).toFixed(2)} MB
-                        </p>
+
+                      <div className="flex gap-x-2 items-center">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link
+                            href={file.imagekitUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Link2 />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            saveAs(file.imagekitUrl, file.fileName);
+                          }}
+                        >
+                          <Download />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteFile(file.id, file.imagekitId)}
+                          disabled={isDeletingFile === file.id}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="flex gap-x-2 items-center">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link
-                          href={file.imagekitUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Link2 />
-                        </Link>
-                      </Button>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          )}
+          {notes.length > 0 && (
+            <TabsContent value="notes">
+              <div className="rounded-md border">
+                <div className="divide-y">
+                  {notes.map((note) => (
+                    <div
+                      key={note.id}
+                      className="flex items-center justify-between p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="bg-slate-100 p-2 rounded">
+                          <FileTextIcon className="h-5 w-5 text-slate-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{note.title}</p>
+                          <p className="text-sm text-slate-500 truncate max-w-md">
+                            {note.content}
+                          </p>
+                        </div>
+                      </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          saveAs(file.imagekitUrl, file.fileName);
-                        }}
-                      >
-                        <Download />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteFile(file.id, file.imagekitId)}
-                        disabled={isDeletingFile === file.id}
+                        onClick={() => deleteNote(note.id)}
+                        disabled={isDeletingNote === note.id}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="notes">
-            <div className="rounded-md border">
-              <div className="divide-y">
-                {notes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="flex items-center justify-between p-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="bg-slate-100 p-2 rounded">
-                        <FileTextIcon className="h-5 w-5 text-slate-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{note.title}</p>
-                        <p className="text-sm text-slate-500 truncate max-w-md">
-                          {note.content}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteNote(note.id)}
-                      disabled={isDeletingNote === note.id}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          )}
         </Tabs>
       </CardContent>
     </Card>
