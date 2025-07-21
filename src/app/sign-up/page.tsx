@@ -68,9 +68,10 @@ export default function SignUpPage() {
         await setActive({ session: signUpAttempt.createdSessionId });
         router.push("/dashboard");
       }
-    } catch (error: any) {
+    } catch (error) {
+      const e = error as { errors: { message: string }[] };
       console.log("Error signing up", JSON.stringify(error, null, 2));
-      setError(error.errors[0].message);
+      setError(e.errors[0].message);
     }
   };
 

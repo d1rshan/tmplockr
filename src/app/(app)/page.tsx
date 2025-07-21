@@ -16,13 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import {
-  AlertCircleIcon,
-  ArrowRight,
-  FileText,
-  ImageIcon,
-  Upload,
-} from "lucide-react";
+import { AlertCircleIcon, FileText, ImageIcon, Upload } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
@@ -64,8 +58,9 @@ export default function HomePage() {
         await setActive({ session: signInAttempt.createdSessionId });
         router.push("/dashboard");
       }
-    } catch (error: any) {
-      setError(error.errors[0].message);
+    } catch (error: unknown) {
+      const e = error as { errors: { message: string }[] };
+      setError(e?.errors[0].message);
       console.log("Error signing in", JSON.stringify(error, null, 2));
     }
   };
