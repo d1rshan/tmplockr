@@ -73,7 +73,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
       <header className="container mx-auto py-6 px-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
+          <h1 className="text-2xl font-bold text-slate-900">TmpLockr</h1>
           <Button variant="outline" size="sm" asChild>
             <Link href="/sign-up">Get Started</Link>
           </Button>
@@ -112,7 +112,7 @@ export default function HomePage() {
                 <div className="bg-slate-100 p-3 rounded-full mb-3">
                   <FileText className="h-6 w-6 text-slate-600" />
                 </div>
-                <h3 className="font-medium">Share Text</h3>
+                <h3 className="font-medium">Save Notes</h3>
               </div>
               <div className="flex flex-col items-center text-center p-4">
                 <div className="bg-slate-100 p-3 rounded-full mb-3">
@@ -182,7 +182,7 @@ export default function HomePage() {
       </main>
 
       <footer className="container mx-auto py-6 text-center text-slate-500">
-        <p>© 2025 TxtBin. Simple, secure file sharing.</p>
+        <p>© 2025 TmpLockr. Simple, secure file sharing.</p>
       </footer>
     </div>
   );
