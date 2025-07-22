@@ -16,7 +16,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { AlertCircleIcon, FileText, ImageIcon, Upload } from "lucide-react";
+import {
+  AlertCircleIcon,
+  FileText,
+  ImageIcon,
+  Loader2,
+  Upload,
+} from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
@@ -26,6 +32,7 @@ export default function HomePage() {
   const [username, setUsername] = useState<string>("");
   const [pin, setPin] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -49,6 +56,7 @@ export default function HomePage() {
     }
 
     try {
+      setIsLoading(true);
       const signInAttempt = await signIn.create({
         identifier: username,
         password: pin + process.env.NEXT_PUBLIC_PASSWORD_SALT,
@@ -62,6 +70,8 @@ export default function HomePage() {
       const e = error as { errors: { message: string }[] };
       setError(e?.errors[0].message);
       console.log("Error signing in", JSON.stringify(error, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -160,9 +170,13 @@ export default function HomePage() {
                     <Button
                       className="w-full gap-2"
                       type="submit"
-                      disabled={!isLoaded}
+                      disabled={!isLoaded || isLoading}
                     >
-                      Access Files
+                      {isLoading ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        "Access Files"
+                      )}
                     </Button>
                   </div>
                 </form>

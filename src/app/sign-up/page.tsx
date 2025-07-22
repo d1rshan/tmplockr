@@ -21,7 +21,7 @@ import { useSignUp } from "@clerk/nextjs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 export default function SignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -29,6 +29,7 @@ export default function SignUpPage() {
   const [pin, setPin] = useState<string>("");
   const [confirmPin, setConfirmPin] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -38,9 +39,11 @@ export default function SignUpPage() {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!isLoaded) {
       return;
     }
+
     if (pin !== confirmPin) {
       setError("Passwords do not match");
       return;
@@ -59,6 +62,7 @@ export default function SignUpPage() {
     }
 
     try {
+      setIsLoading(true);
       const signUpAttempt = await signUp.create({
         username: username,
         password: pin + process.env.NEXT_PUBLIC_PASSWORD_SALT,
@@ -72,6 +76,8 @@ export default function SignUpPage() {
       const e = error as { errors: { message: string }[] };
       console.log("Error signing up", JSON.stringify(error, null, 2));
       setError(e.errors[0].message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,9 +149,13 @@ export default function SignUpPage() {
                     <Button
                       className="w-full"
                       type="submit"
-                      disabled={!isLoaded}
+                      disabled={!isLoaded || isLoading}
                     >
-                      Sign Up
+                      {isLoading ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        "Sign Up"
+                      )}
                     </Button>
                   </div>
                 </form>

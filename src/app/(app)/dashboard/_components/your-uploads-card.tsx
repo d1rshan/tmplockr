@@ -57,7 +57,7 @@ export const YourUploadsCard = () => {
         <Tabs defaultValue="files">
           <TabsList className="grid grid-cols-2 mb-6">
             <TabsTrigger value="files">Files</TabsTrigger>
-            <TabsTrigger value="notes">Text</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
           {files.length > 0 && (
             <TabsContent value="files">
