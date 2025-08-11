@@ -1,4 +1,10 @@
 "use client";
+
+import { Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,12 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Input } from "@/components/ui/input";
-// import { useNotesStore } from "@/stores/notesStore";
+import { useCreateNote } from "@/features/notes/hooks/useCreateNote";
 
 const createNoteFormSchema = z.object({
   title: z.string().min(1, { error: "Title is required" }),
@@ -30,16 +32,12 @@ export const CreateNoteTab = () => {
     },
   });
 
-  const { reset } = form;
+  const { mutateAsync: createNote, isPending: isSaving } = useCreateNote();
 
-  const addNote = (values: any) => {};
-
-  const isSaving = true;
-
-  // const { addNote, isSaving } = useNotesStore();
   const onSubmit = async (values: z.infer<typeof createNoteFormSchema>) => {
-    await addNote(values);
-    reset();
+    const { title, content } = values;
+    await createNote({ title, content });
+    form.reset();
   };
 
   return (

@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 
-import { notes } from "@/lib/db/schema";
+import { notesTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ noteId: number }> }
+  { params }: { params: Promise<{ noteId: string }> }
 ) {
   const { noteId } = await params;
   try {
@@ -21,16 +21,16 @@ export async function DELETE(
       return new NextResponse("Note ID Missing", { status: 400 });
     }
 
-    const result = await db
-      .delete(notes)
-      .where(eq(notes.id, noteId))
+    const [note] = await db
+      .delete(notesTable)
+      .where(eq(notesTable.id, noteId))
       .returning();
 
-    if (result.length === 0) {
+    if (!note) {
       return new NextResponse("Note Not Found", { status: 400 });
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(note);
   } catch (error) {
     console.log("[NOTE_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });

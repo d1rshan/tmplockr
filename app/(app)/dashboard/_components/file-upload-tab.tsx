@@ -1,4 +1,9 @@
 "use client";
+
+import { useState } from "react";
+import { toast } from "sonner";
+import { useDropzone } from "react-dropzone";
+
 import {
   FileIcon,
   FileTextIcon,
@@ -8,15 +13,11 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { upload } from "@imagekit/next";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "sonner";
-import { useDropzone } from "react-dropzone";
 import { Input } from "@/components/ui/input";
-// import { useFilesStore } from "@/stores/filesStore";
+import axios from "axios";
 
-const FileUploadTab = () => {
+export const FileUploadTab = () => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
@@ -31,24 +32,6 @@ const FileUploadTab = () => {
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone();
-  const authenticator = async () => {
-    try {
-      const response = await fetch("/api/imagekit-auth");
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Request failed with status ${response.status}: ${errorText}`
-        );
-      }
-
-      const data = await response.json();
-      const { signature, expire, token, publicKey } = data;
-      return { signature, expire, token, publicKey };
-    } catch (error) {
-      console.error("Authentication error:", error);
-      throw new Error("Authentication request failed");
-    }
-  };
 
   const handleRemoveFile = (index: number) => {
     setAcceptedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -57,50 +40,41 @@ const FileUploadTab = () => {
   const handleUpload = async () => {
     if (!acceptedFiles || acceptedFiles.length === 0) {
       toast.error("Please select file to upload");
+      return;
     }
+
     setIsUploading(true);
-    for (const file of acceptedFiles) {
-      let authParams;
-      try {
-        authParams = await authenticator();
-      } catch (authError) {
-        console.error("Failed to authenticate for upload:", authError);
-        return;
-      }
-      const { signature, expire, token, publicKey } = authParams;
 
-      try {
-        const res = await upload({
-          expire,
-          token,
-          signature,
-          publicKey,
-          file,
-          fileName: file.name,
-          onProgress: (event) => {
-            setProgress((event.loaded / event.total) * 100);
-          },
-        });
-        console.log("Upload response:", res);
+    try {
+      const formData = new FormData();
+      acceptedFiles.forEach((file) => {
+        // "file" is the key name — must match what you use in server route
+        formData.append("files", file);
+      });
 
-        // await addFile({
-        //   fileName: file.name,
-        //   fileSize: res.size!,
-        //   fileType: res.fileType!,
-        //   imagekitUrl: res.url!,
-        //   imagekitId: res.fileId!,
-        // });
+      const res = await axios.post("/api/files", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setProgress(percent);
+          }
+        },
+      });
 
-        toast.success(`${file.name} uploaded`);
-        setProgress(0);
-      } catch (error) {
-        toast.error(`Failed to upload ${file.name}`);
-        console.log(`Failed to upload ${file.name}`, error);
-      }
+      console.log(res.data);
+      setAcceptedFiles([]);
+      toast.success("Files uploaded successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed");
+    } finally {
+      setIsUploading(false);
     }
-    setIsUploading(false);
-    setAcceptedFiles([]);
   };
+
   return (
     <>
       <div
@@ -180,4 +154,3 @@ const FileUploadTab = () => {
     </>
   );
 };
-export default FileUploadTab;

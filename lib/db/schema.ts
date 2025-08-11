@@ -1,40 +1,49 @@
-// db/schema.ts
-
 import {
   pgTable,
   text,
   timestamp,
   integer,
-  varchar,
-  serial,
+  uuid,
+  index,
 } from "drizzle-orm/pg-core";
 
-// Users table
-export const users = pgTable("users", {
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
-  storageUsed: integer("storage_used").notNull(),
+export const usersTable = pgTable("users", {
+  id: text("id").notNull().primaryKey(),
+  storageUsed: integer("storage_used").default(0).notNull(),
+  notesUsed: integer("notes_used").default(0).notNull(),
 });
 
-// Files table
-export const files = pgTable("files", {
-  id: serial("id").primaryKey(),
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
-  fileName: text("file_name").notNull(),
-  fileSize: integer("file_size").notNull(), // in bytes
-  fileType: varchar("file_type", { length: 100 }).notNull(),
-  imagekitUrl: varchar("imagekit_url", { length: 255 }).notNull(), // Imagekit url
-  imagekitId: varchar("imagekit_id", { length: 255 }).notNull(), // Imagekit file id
-  uploadedAt: timestamp("uploaded_at").defaultNow(),
-});
+export const filesTable = pgTable(
+  "files",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => usersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    name: text("name").notNull(),
+    size: integer("size").notNull(),
+    type: text("type").notNull(),
+    imagekitUrl: text("imagekit_url").notNull(),
+    imagekitId: text("imagekit_id").notNull(),
+    uploadedAt: timestamp("uploaded_at").defaultNow(),
+  },
+  (t) => [index("files_user_id_index").on(t.userId)]
+);
 
-export type File = typeof files.$inferSelect;
-
-// Notes table
-export const notes = pgTable("notes", {
-  id: serial("id").primaryKey(),
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  content: text("content").notNull(),
-});
-
-export type Note = typeof notes.$inferSelect;
+export const notesTable = pgTable(
+  "notes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => usersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    title: text("title").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [index("notes_user_id_index").on(t.userId)]
+);

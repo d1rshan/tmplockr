@@ -1,18 +1,49 @@
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import ImageKit from "imagekit";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import { files } from "@/lib/db/schema";
+import { filesTable, usersTable } from "@/lib/db/schema";
+import axios from "axios";
 
-const imagekit = new ImageKit({
+export const imagekit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
   urlEndpoint: "https://ik.imagekit.io/d1rsh/",
 });
 
-export async function POST(req: NextRequest) {
+// export async function PATCH(req: Request) {
+//   try {
+//     const { userId } = await auth();
+
+//     if (!userId) {
+//       return new NextResponse("Not Authorized", { status: 401 });
+//     }
+
+//     const body = await req.json();
+//     const { name, size, type, imagekitId, imagekitUrl } = body;
+
+//     const [file] = await db
+//       .insert(filesTable)
+//       .values({
+//         name,
+//         userId,
+//         size,
+//         type,
+//         imagekitId,
+//         imagekitUrl,
+//       })
+//       .returning();
+
+//     return NextResponse.json(file);
+//   } catch (error) {
+//     console.log("[FILES_POST]", error);
+//     return new NextResponse("Internal Error", { status: 500 });
+//   }
+// }
+
+export async function POST(req: Request) {
   try {
     const { userId } = await auth();
 
@@ -20,97 +51,86 @@ export async function POST(req: NextRequest) {
       return new NextResponse("Not Authorized", { status: 401 });
     }
 
-    const body = await req.json();
-    const { fileName, fileSize, fileType, imagekitId, imagekitUrl } = body;
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId));
 
-    const newFile = await db
-      .insert(files)
-      .values({
-        fileName,
-        clerkUserId: userId,
-        fileSize,
-        fileType,
-        imagekitId,
-        imagekitUrl,
+    if (!user) {
+      return new NextResponse("User Missing In Table", { status: 400 });
+    }
+
+    const LIMIT = 100 * 1024 * 1024;
+    const storageUsed = user.storageUsed;
+    const availableStorage = LIMIT - storageUsed;
+
+    const formData = await req.formData();
+    const files = formData.getAll("files") as File[];
+
+    console.log(filesTable);
+
+    if (!files || files.length === 0) {
+      return new NextResponse("Files Missing", { status: 400 });
+    }
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+    console.log("TOTAL SIZE:", totalSize);
+
+    if (totalSize > availableStorage) {
+      return new NextResponse("Upload Size Exceeds Storage Limit", {
+        status: 400,
+      });
+    }
+
+    const results = await Promise.all(
+      files.map(async (file) => {
+        // file is a native File object
+        const uploadForm = new FormData();
+        uploadForm.append("file", file, file.name);
+        uploadForm.append("fileName", file.name);
+
+        const res = await axios.post(
+          "https://upload.imagekit.io/api/v1/files/upload",
+          uploadForm, // ✅ FormData goes here
+          {
+            headers: {
+              Authorization:
+                "Basic " +
+                Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString(
+                  "base64"
+                ),
+              // ...uploadForm.getHeaders?.(), // Node.js FormData needs explicit headers
+            },
+          }
+        );
+
+        await db.insert(filesTable).values({
+          userId,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          imagekitId: res.data.fileId,
+          imagekitUrl: res.data.url,
+        });
+        return res.data;
       })
-      .returning();
+    );
 
-    return NextResponse.json(newFile[0]);
+    console.log(results);
+
+    const updatedStorageUsed = storageUsed + totalSize;
+    await db
+      .update(usersTable)
+      .set({ storageUsed: updatedStorageUsed })
+      .where(eq(usersTable.id, userId));
+
+    // console.log(results);
+    return NextResponse.json(results);
   } catch (error) {
     console.log("[FILES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-// export async function POST(request: NextRequest) {
-//   try {
-//     const { userId } = await auth();
-
-//     if (!userId) {
-//       return NextResponse.json({ error: "Not authorized" }, { status: 400 });
-//     }
-
-//     const result = await db
-//       .select()
-//       .from(users)
-//       .where(eq(users.clerkUserId, userId))
-//       .limit(1);
-
-//     const user = result[0];
-//     const storageUsed = user?.storageUsed || 0;
-//     const userStorageLeftBytes = 100 * 1024 * 1024 - storageUsed;
-
-//     if (!user || result.length === 0) {
-//       await db.insert(users).values({
-//         clerkUserId: userId,
-//       });
-//     }
-
-//     const formData = await request.formData();
-//     const files = formData.getAll("files") as File[];
-
-//     if (!files || files.length === 0) {
-//       return NextResponse.json({ error: "No files found" }, { status: 400 });
-//     }
-
-//     const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-//     if (totalSize > userStorageLeftBytes) {
-//       return NextResponse.json(
-//         {
-//           error: `Total upload size exceeds storage limit (${(
-//             userStorageLeftBytes /
-//             (1024 * 1024)
-//           ).toFixed(1)}MB)`,
-//         },
-//         { status: 400 }
-//       );
-//     }
-
-//     for (const file of files){
-//       // store each file info
-//       await db.insert(filesDB).values({
-//         clerkUserId: userId,
-//         fileName: file.name,
-//         fileSize: file.size,
-//         fileType: file.type,
-//         publicId: ,
-//       });
-//     }
-
-//     }
-
-//     // Update storage left for user
-//     // const updatedSizeForUser = storageUsed + totalSize;
-//     // await db
-//     //   .update(users)
-//     //   .set({ storageUsed: updatedSizeForUser })
-//     //   .where(eq(users.clerkUserId, userId));
-
-//     return NextResponse.json({  }, { status: 200 });
-//   } catch (error) {
-//     console.error("Error uploading files to Cloudinary:", error);
-//     return NextResponse.json({ error: "Upload failed!" }, { status: 500 });
-//   }
-// }
 
 export async function GET() {
   try {
@@ -120,46 +140,14 @@ export async function GET() {
       return new NextResponse("Not Authorized", { status: 401 });
     }
 
-    const res = await db
+    const files = await db
       .select()
-      .from(files)
-      .where(eq(files.clerkUserId, userId));
+      .from(filesTable)
+      .where(eq(filesTable.userId, userId));
 
-    return NextResponse.json(res);
+    return NextResponse.json(files);
   } catch (error) {
     console.error("[FILES_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return new NextResponse("Not Authorized", { status: 401 });
-    }
-
-    const body = await request.json();
-    const { fileId, imagekitId } = body;
-
-    imagekit.deleteFile(imagekitId, function (error, result) {
-      if (error) console.log(error);
-      else console.log(result);
-    });
-
-    const res = await db
-      .delete(files)
-      .where(and(eq(files.clerkUserId, userId), eq(files.id, fileId)))
-      .returning();
-
-    if (res.length === 0) {
-      return new NextResponse("File Not Found", { status: 400 });
-    }
-
-    return NextResponse.json(res);
-  } catch (error) {
-    console.error("[FILES_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

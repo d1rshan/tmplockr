@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
-import { notes } from "@/lib/db/schema";
+import { notesTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -19,15 +19,12 @@ export async function POST(req: Request) {
       return new NextResponse("Title, Content Missing", { status: 400 });
     }
 
-    const newNote = {
-      title,
-      content,
-      clerkUserId: userId,
-    };
+    const [note] = await db
+      .insert(notesTable)
+      .values({ title, content, userId })
+      .returning();
 
-    const result = await db.insert(notes).values(newNote).returning();
-
-    return NextResponse.json(result[0]);
+    return NextResponse.json(note);
   } catch (error) {
     console.log("[NOTES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -42,12 +39,12 @@ export async function GET() {
       return new NextResponse("Not Authorized", { status: 401 });
     }
 
-    const notesList = await db
+    const notes = await db
       .select()
-      .from(notes)
-      .where(eq(notes.clerkUserId, userId));
+      .from(notesTable)
+      .where(eq(notesTable.userId, userId));
 
-    return NextResponse.json(notesList);
+    return NextResponse.json(notes);
   } catch (error) {
     console.log("[NOTES_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });

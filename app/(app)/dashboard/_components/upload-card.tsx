@@ -8,7 +8,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { CreateNoteTab } from "./create-note-tab";
-import FileUploadTab from "./file-upload-tab";
+import { FileUploadTab } from "./file-upload-tab";
 
 export const UploadCard = () => {
   return (

@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
-// import { useFilesStore } from "@/stores/filesStore";
-// import { useNotesStore } from "@/stores/notesStore";
+import { useDeleteNote } from "@/features/notes/hooks/useDeleteNote";
+import { useNotes } from "@/features/notes/hooks/useNotes";
 import {
   Copy,
   Download,
@@ -20,11 +21,13 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 // import { saveAs } from "file-saver";
 import { toast } from "sonner";
+import { Note } from "@/types";
 
 export const YourUploadsCard = () => {
+  const { data: notes, isLoading } = useNotes();
+  const { mutate: deleteNote, isPending: isDeletingNote } = useDeleteNote();
   // const { files, fetchFiles, isDeletingFile, deleteFile } = useFilesStore();
   // const { notes, isDeletingNote, deleteNote, fetchNotes } = useNotesStore();
 
@@ -115,11 +118,11 @@ export const YourUploadsCard = () => {
               </div>
             </TabsContent>
           )} */}
-          {/* {notes.length > 0 && (
+          {notes && notes.length > 0 && (
             <TabsContent value="notes">
               <div className="rounded-md border">
                 <div className="divide-y">
-                  {notes.map((note) => (
+                  {notes.map((note: Note) => (
                     <div
                       key={note.id}
                       className="flex items-center justify-between p-4"
@@ -147,8 +150,8 @@ export const YourUploadsCard = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deleteNote(note.id)}
-                          disabled={isDeletingNote === note.id}
+                          onClick={() => deleteNote({ noteId: note.id })}
+                          disabled={isDeletingNote}
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
@@ -158,7 +161,7 @@ export const YourUploadsCard = () => {
                 </div>
               </div>
             </TabsContent>
-          )} */}
+          )}
         </Tabs>
       </CardContent>
     </Card>
