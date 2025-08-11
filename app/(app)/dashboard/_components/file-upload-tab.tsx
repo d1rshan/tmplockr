@@ -16,13 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { useUploadFiles } from "@/features/files/hooks/useUploadFiles";
 
 export const FileUploadTab = () => {
   const [progress, setProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
 
   // const { addFile } = useFilesStore();
+
+  const { mutateAsync: uploadFiles, isPending: isUploading } = useUploadFiles();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -43,22 +45,13 @@ export const FileUploadTab = () => {
       return;
     }
 
-    setIsUploading(true);
+    const formData = new FormData();
+    acceptedFiles.forEach((file) => formData.append("files", file));
 
-    try {
-      const formData = new FormData();
-      acceptedFiles.forEach((file) => formData.append("files", file));
+    await uploadFiles({ formData });
 
-      // call it here
-
-      setAcceptedFiles([]);
-      toast.success("Files Uploaded");
-    } catch (err) {
-      console.error(err);
-      toast.error("Upload Failed");
-    } finally {
-      setIsUploading(false);
-    }
+    setAcceptedFiles([]);
+    toast.success("Files Uploaded");
   };
 
   return (

@@ -1,10 +1,16 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import ImageKit from "imagekit";
 
-import { imagekit } from "../route";
 import { auth } from "@clerk/nextjs/server";
-import { filesTable } from "@/lib/db/schema";
+import { filesTable, usersTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+  urlEndpoint: "https://ik.imagekit.io/d1rsh/",
+});
 
 export async function DELETE(
   req: Request,
@@ -18,24 +24,28 @@ export async function DELETE(
       return new NextResponse("Not Authorized", { status: 401 });
     }
 
-    const body = await req.json();
-    const { imagekitId } = body;
+    const { imagekitId } = await req.json();
 
     imagekit.deleteFile(imagekitId, function (error, result) {
       if (error) console.log(error);
       else console.log(result);
     });
 
-    const res = await db
+    const [file] = await db
       .delete(filesTable)
       .where(and(eq(filesTable.userId, userId), eq(filesTable.id, fileId)))
       .returning();
 
-    if (res.length === 0) {
+    if (!file) {
       return new NextResponse("File Not Found", { status: 400 });
     }
 
-    return NextResponse.json(res);
+    await db
+      .update(usersTable)
+      .set({ storageUsed: sql`${usersTable.storageUsed} - ${file.size}` })
+      .where(eq(usersTable.id, userId));
+
+    return NextResponse.json(file);
   } catch (error) {
     console.error("[FILES_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
