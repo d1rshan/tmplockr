@@ -21,23 +21,17 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-// import { saveAs } from "file-saver";
+import { saveAs } from "file-saver";
 import { toast } from "sonner";
-import { Note } from "@/types";
+import { useFiles } from "@/features/files/hooks/useFiles";
+import { useDeleteFile } from "@/features/files/hooks/useDeleteFile";
 
 export const YourUploadsCard = () => {
-  const { data: notes, isLoading } = useNotes();
+  const { data: notes = [], isLoading: notesLoading } = useNotes();
   const { mutate: deleteNote, isPending: isDeletingNote } = useDeleteNote();
-  // const { files, fetchFiles, isDeletingFile, deleteFile } = useFilesStore();
-  // const { notes, isDeletingNote, deleteNote, fetchNotes } = useNotesStore();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await fetchNotes();
-  //     await fetchFiles();
-  //   };
-  //   fetchData();
-  // }, [fetchNotes, fetchFiles]);
+  const { data: files = [], isLoading: filesLoading } = useFiles();
+  const { mutate: deleteFile, isPending: isDeletingFile } = useDeleteFile();
 
   const copyNote = async (title: string, text: string) => {
     try {
@@ -62,7 +56,7 @@ export const YourUploadsCard = () => {
             <TabsTrigger value="files">Files</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
-          {/* {files.length > 0 && (
+          {files.length > 0 && (
             <TabsContent value="files">
               <div className="rounded-md border">
                 <div className="divide-y">
@@ -76,9 +70,9 @@ export const YourUploadsCard = () => {
                           <FileIcon className="h-5 w-5 text-slate-600" />
                         </div>
                         <div>
-                          <p className="font-medium">{file.fileName}</p>
+                          <p className="font-medium">{file.name}</p>
                           <p className="text-sm text-slate-500">
-                            {(file.fileSize / (1024 * 1024)).toFixed(2)} MB
+                            {(file.size / (1024 * 1024)).toFixed(2)} MB
                           </p>
                         </div>
                       </div>
@@ -97,7 +91,7 @@ export const YourUploadsCard = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => {
-                            saveAs(file.imagekitUrl, file.fileName);
+                            saveAs(file.imagekitUrl, file.name);
                           }}
                         >
                           <Download />
@@ -106,8 +100,13 @@ export const YourUploadsCard = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deleteFile(file.id, file.imagekitId)}
-                          disabled={isDeletingFile === file.id}
+                          onClick={() =>
+                            deleteFile({
+                              fileId: file.id,
+                              imagekitId: file.imagekitId,
+                            })
+                          }
+                          disabled={isDeletingFile}
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
@@ -117,12 +116,12 @@ export const YourUploadsCard = () => {
                 </div>
               </div>
             </TabsContent>
-          )} */}
+          )}
           {notes && notes.length > 0 && (
             <TabsContent value="notes">
               <div className="rounded-md border">
                 <div className="divide-y">
-                  {notes.map((note: Note) => (
+                  {notes.map((note) => (
                     <div
                       key={note.id}
                       className="flex items-center justify-between p-4"

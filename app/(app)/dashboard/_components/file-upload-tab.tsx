@@ -47,29 +47,15 @@ export const FileUploadTab = () => {
 
     try {
       const formData = new FormData();
-      acceptedFiles.forEach((file) => {
-        // "file" is the key name — must match what you use in server route
-        formData.append("files", file);
-      });
+      acceptedFiles.forEach((file) => formData.append("files", file));
 
-      const res = await axios.post("/api/files", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percent = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setProgress(percent);
-          }
-        },
-      });
+      // call it here
 
-      console.log(res.data);
       setAcceptedFiles([]);
-      toast.success("Files uploaded successfully");
+      toast.success("Files Uploaded");
     } catch (err) {
       console.error(err);
-      toast.error("Upload failed");
+      toast.error("Upload Failed");
     } finally {
       setIsUploading(false);
     }

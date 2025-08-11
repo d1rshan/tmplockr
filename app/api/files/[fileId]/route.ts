@@ -6,7 +6,11 @@ import { auth } from "@clerk/nextjs/server";
 import { filesTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 
-export async function DELETE(req: Request) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ fileId: string }> }
+) {
+  const { fileId } = await params;
   try {
     const { userId } = await auth();
 
@@ -15,7 +19,7 @@ export async function DELETE(req: Request) {
     }
 
     const body = await req.json();
-    const { fileId, imagekitId } = body;
+    const { imagekitId } = body;
 
     imagekit.deleteFile(imagekitId, function (error, result) {
       if (error) console.log(error);
