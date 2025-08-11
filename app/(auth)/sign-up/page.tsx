@@ -85,7 +85,7 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
       <header className="container mx-auto py-6 px-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-900">TxtBin</h1>
+          <h1 className="text-2xl font-bold text-slate-900">TmpLockr</h1>
           <Button variant="outline" size="sm" asChild>
             <Link href="/">
               <ArrowLeft size={16} /> Home
