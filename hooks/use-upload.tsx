@@ -50,6 +50,18 @@ export function UploadProvider({ children }: { children: ReactNode }) {
 
     setIsUploading(true);
 
+    setProgress(0);
+
+    let progress = 0;
+    const progressIncrement = 7; // % to increment per tick
+    const intervalMs = 100; // interval duration in ms
+
+    // Start interval to simulate progress
+    const progressTimer = setInterval(() => {
+      progress = Math.min(progress + progressIncrement, 100); // cap at 99% until done
+      setProgress(progress);
+    }, intervalMs);
+
     try {
       // Upload all files concurrently
       const uploadResults = await Promise.all(
@@ -64,10 +76,12 @@ export function UploadProvider({ children }: { children: ReactNode }) {
               publicKey,
               file,
               fileName: file.name,
-              onProgress: (event) => {
-                setProgress((event.loaded / event.total) * 100);
-              },
             });
+
+            // TODO: Fix this
+            setAcceptedFiles((prev) =>
+              prev.filter((acceptedFile) => acceptedFile.name != file.name)
+            );
 
             toast.success(`${file.name} Uploaded`);
 
@@ -88,6 +102,10 @@ export function UploadProvider({ children }: { children: ReactNode }) {
 
       // Filter out failed uploads (nulls) before sending to backend
       const successfulResults = uploadResults.filter((r) => r !== null);
+
+      // Once all done, progress = 100%
+      clearInterval(progressTimer);
+      setProgress(100);
 
       await saveFilesToDB({ uploadResults: successfulResults });
 

@@ -1,10 +1,6 @@
 "use client";
 
-import { useUpload } from "@/hooks/use-upload";
 import { useDropzone } from "react-dropzone";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import {
   FileIcon,
   FileTextIcon,
@@ -13,6 +9,11 @@ import {
   UploadIcon,
   X,
 } from "lucide-react";
+
+import { useUpload } from "@/hooks/use-upload";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 
 export const FileUploadTab = () => {
   const {
