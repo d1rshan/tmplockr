@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { toast } from "sonner";
+import { useUpload } from "@/hooks/use-upload";
 import { useDropzone } from "react-dropzone";
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   FileIcon,
   FileTextIcon,
@@ -12,47 +13,20 @@ import {
   UploadIcon,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-import { useUploadFiles } from "@/features/files/hooks/useUploadFiles";
 
 export const FileUploadTab = () => {
-  const [progress, setProgress] = useState(0);
-  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+  const {
+    acceptedFiles,
+    setAcceptedFiles,
+    isUploading,
+    progress,
+    uploadFiles,
+    removeFile,
+  } = useUpload();
 
-  // const { addFile } = useFilesStore();
-
-  const { mutateAsync: uploadFiles, isPending: isUploading } = useUploadFiles();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const selectedFiles = Array.from(event.target.files);
-      setAcceptedFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
-    }
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone();
-
-  const handleRemoveFile = (index: number) => {
-    setAcceptedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
-  const handleUpload = async () => {
-    if (!acceptedFiles || acceptedFiles.length === 0) {
-      toast.error("Please select file to upload");
-      return;
-    }
-
-    const formData = new FormData();
-    acceptedFiles.forEach((file) => formData.append("files", file));
-
-    await uploadFiles({ formData });
-
-    setAcceptedFiles([]);
-    toast.success("Files Uploaded");
-  };
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (files) => setAcceptedFiles((prev) => [...prev, ...files]),
+  });
 
   return (
     <>
@@ -60,27 +34,26 @@ export const FileUploadTab = () => {
         className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center"
         {...getRootProps()}
       >
-        <Input {...getInputProps()} onChange={handleFileChange} />
-
+        <Input {...getInputProps()} />
         <div className="flex flex-col items-center gap-2">
           <div className="bg-slate-100 p-3 rounded-full">
             <UploadIcon className="h-6 w-6 text-slate-600" />
           </div>
-
           <h3 className="font-medium text-slate-900">
             {isDragActive
               ? " Drop the files here ..."
               : "Drag drop some files here, or click to select files"}
           </h3>
-
           <p className="text-sm text-slate-500">
             Support for documents, PDFs, and more
           </p>
         </div>
       </div>
-      <Button className="mt-2" onClick={handleUpload} disabled={isUploading}>
+
+      <Button className="mt-2" onClick={uploadFiles} disabled={isUploading}>
         {isUploading ? <Loader2 className="animate-spin" /> : "Upload"}
       </Button>
+
       {isUploading && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -92,12 +65,13 @@ export const FileUploadTab = () => {
           <Progress value={progress} max={100} />
         </div>
       )}
+
       {acceptedFiles.length > 0 && (
-        <div className="rounded-md border">
+        <div className="rounded-md border mt-4">
           <div className="divide-y">
             {acceptedFiles.map((file, i) => (
               <div
-                key={file.name}
+                key={file.name + i}
                 className="flex items-center justify-between p-4"
               >
                 <div className="flex items-center gap-3">
@@ -120,7 +94,7 @@ export const FileUploadTab = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleRemoveFile(i)}
+                  onClick={() => removeFile(i)}
                   disabled={isUploading}
                 >
                   <X className="h-4 w-4" />

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { CreateNoteTab } from "./create-note-tab";
 import { FileUploadTab } from "./file-upload-tab";
+import { UploadProvider } from "@/hooks/use-upload";
 
 export const UploadCard = () => {
   return (
@@ -27,7 +28,9 @@ export const UploadCard = () => {
           </TabsList>
 
           <TabsContent value="files" className="space-y-4">
-            <FileUploadTab />
+            <UploadProvider>
+              <FileUploadTab />
+            </UploadProvider>
           </TabsContent>
           <TabsContent value="text" className="space-y-4">
             <CreateNoteTab />

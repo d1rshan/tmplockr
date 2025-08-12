@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { File } from "@/types";
+
 export const getFiles = async () => {
   const res = await axios.get("/api/files");
   return res.data;
@@ -12,9 +14,7 @@ export const deleteFile = async (fileId: string, imagekitId: string) => {
   return res.data;
 };
 
-export const uploadFiles = async (formData: FormData) => {
-  const res = await axios.post("/api/files", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const uploadFiles = async (uploadResults: File[]) => {
+  const res = await axios.post("/api/files", { uploadResults });
   return res.data;
 };

@@ -32,6 +32,9 @@ export const filesTable = pgTable(
   (t) => [index("files_user_id_index").on(t.userId)]
 );
 
+export type FileInsert = typeof filesTable.$inferInsert;
+export type FileSelect = typeof filesTable.$inferSelect;
+
 export const notesTable = pgTable(
   "notes",
   {

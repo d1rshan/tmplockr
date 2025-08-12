@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { filesTable, usersTable } from "@/lib/db/schema";
-import axios from "axios";
+import { File } from "@/types";
 
 export async function POST(req: Request) {
   try {
@@ -27,13 +27,18 @@ export async function POST(req: Request) {
     const storageUsed = user.storageUsed;
     const availableStorage = LIMIT - storageUsed;
 
-    const formData = await req.formData();
-    const files = formData.getAll("files") as File[];
+    const { uploadResults } = (await req.json()) as { uploadResults: File[] };
 
-    if (!files || files.length === 0) {
-      return new NextResponse("Files Missing", { status: 400 });
-    }
-    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    const values = uploadResults.map((file) => ({
+      userId,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      imagekitUrl: file.imagekitUrl,
+      imagekitId: file.imagekitId,
+    }));
+
+    const totalSize = values.reduce((total, file) => total + file.size, 0);
 
     if (totalSize > availableStorage) {
       return new NextResponse("Upload Size Exceeds Storage Limit", {
@@ -41,40 +46,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const results = await Promise.all(
-      files.map(async (file) => {
-        const uploadForm = new FormData();
-        // we are doing this coz imagekit expects file and fileName in these fields
-        uploadForm.append("file", file, file.name);
-        uploadForm.append("fileName", file.name);
-
-        const res = await axios.post(
-          "https://upload.imagekit.io/api/v1/files/upload",
-          uploadForm, // ✅ FormData goes here
-          {
-            headers: {
-              Authorization:
-                "Basic " +
-                Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString(
-                  "base64"
-                ),
-              // ...uploadForm.getHeaders?.(),
-            },
-          }
-        );
-
-        return {
-          userId,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          imagekitId: res.data.fileId,
-          imagekitUrl: res.data.url,
-        };
-      })
-    );
-
-    const data = await db.insert(filesTable).values(results).returning();
+    const files = await db.insert(filesTable).values(values).returning();
 
     const updatedStorageUsed = storageUsed + totalSize;
     await db
@@ -82,7 +54,7 @@ export async function POST(req: Request) {
       .set({ storageUsed: updatedStorageUsed })
       .where(eq(usersTable.id, userId));
 
-    return NextResponse.json(data);
+    return NextResponse.json(files);
   } catch (error) {
     console.log("[FILES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
-import { useDeleteNote } from "@/features/notes/hooks/useDeleteNote";
-import { useNotes } from "@/features/notes/hooks/useNotes";
+import { useDeleteNote } from "@/features/notes/hooks/use-delete-note";
+import { useNotes } from "@/features/notes/hooks/use-notes";
 import {
   Copy,
   Download,
@@ -23,8 +23,8 @@ import {
 import Link from "next/link";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
-import { useFiles } from "@/features/files/hooks/useFiles";
-import { useDeleteFile } from "@/features/files/hooks/useDeleteFile";
+import { useFiles } from "@/features/files/hooks/use-files";
+import { useDeleteFile } from "@/features/files/hooks/use-delete-file";
 
 export const YourUploadsCard = () => {
   const { data: notes = [], isLoading: notesLoading } = useNotes();
@@ -102,7 +102,7 @@ export const YourUploadsCard = () => {
                           size="icon"
                           onClick={() =>
                             deleteFile({
-                              fileId: file.id,
+                              fileId: file.id!,
                               imagekitId: file.imagekitId,
                             })
                           }
