@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
-import { notesTable } from "@/lib/db/schema";
+import { notesTable, usersTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 
 export async function DELETE(
@@ -29,6 +29,11 @@ export async function DELETE(
     if (!note) {
       return new NextResponse("Note Not Found", { status: 400 });
     }
+
+    await db
+      .update(usersTable)
+      .set({ notesUsed: sql`${usersTable.notesUsed} - 1` })
+      .where(eq(usersTable.id, userId));
 
     return NextResponse.json(note);
   } catch (error) {

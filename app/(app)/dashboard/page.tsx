@@ -3,13 +3,14 @@ import { redirect } from "next/navigation";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { eq } from "drizzle-orm";
 
-import { filesTable, notesTable } from "@/lib/db/schema";
+import { filesTable, notesTable, usersTable } from "@/lib/db/schema";
 import { getQueryClient } from "@/lib/utils";
 import { db } from "@/lib/db";
 
 import { SignoutButton } from "./_components/signout-button";
 import { UploadCard } from "./_components/upload-card";
 import { YourUploadsCard } from "./_components/your-uploads-card";
+import { UserCard } from "./_components/user-card";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -21,6 +22,25 @@ export default async function DashboardPage() {
   const queryClient = getQueryClient();
 
   await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["user"],
+      queryFn: async () => {
+        const [user] = await db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.id, userId));
+
+        if (!user) {
+          const [user] = await db
+            .insert(usersTable)
+            .values({ id: userId, storageUsed: 0, notesUsed: 0 })
+            .returning();
+          return user;
+        }
+
+        return user;
+      },
+    }),
     queryClient.prefetchQuery({
       queryKey: ["notes"],
       queryFn: async () => {
@@ -57,6 +77,7 @@ export default async function DashboardPage() {
 
         <main className="container mx-auto py-8 px-4">
           <div className="grid gap-6">
+            <UserCard />
             <UploadCard />
             <YourUploadsCard />
           </div>

@@ -14,7 +14,8 @@ export const useSaveFilesToDB = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      toast.success("Saved Files To DB");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Files Uploaded");
     },
   });
 };

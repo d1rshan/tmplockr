@@ -11,6 +11,7 @@ export const useCreateNote = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };

@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
-import { notesTable } from "@/lib/db/schema";
+import { notesTable, usersTable } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -11,6 +11,21 @@ export async function POST(req: Request) {
 
     if (!userId) {
       return new NextResponse("Not Authorized", { status: 401 });
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId));
+
+    if (!user) {
+      return new NextResponse("User Missing From Table", { status: 400 });
+    }
+
+    const notesUsed = user.notesUsed;
+
+    if (notesUsed == 10) {
+      return new NextResponse("Notes Limit Exceeded", { status: 400 });
     }
 
     const { title, content } = await req.json();
@@ -23,6 +38,13 @@ export async function POST(req: Request) {
       .insert(notesTable)
       .values({ title, content, userId })
       .returning();
+
+    const updatedNotesUsed = notesUsed + 1;
+
+    await db
+      .update(usersTable)
+      .set({ notesUsed: updatedNotesUsed })
+      .where(eq(usersTable.id, userId));
 
     return NextResponse.json(note);
   } catch (error) {

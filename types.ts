@@ -1,3 +1,9 @@
+export type User = {
+  id: string;
+  storageUsed: number;
+  notesUsed: number;
+};
+
 export type Note = {
   id: string;
   userId: string;
