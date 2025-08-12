@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         uploadForm.append("fileName", file.name);
 
         const res = await axios.post(
-          "https://upload.imagekit.io/api/v2/files/upload",
+          "https://upload.imagekit.io/api/v1/files/upload",
           uploadForm, // ✅ FormData goes here
           {
             headers: {
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       })
     );
 
-    const data = await db.insert(filesTable).values(results);
+    const data = await db.insert(filesTable).values(results).returning();
 
     const updatedStorageUsed = storageUsed + totalSize;
     await db
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       .set({ storageUsed: updatedStorageUsed })
       .where(eq(usersTable.id, userId));
 
-    return NextResponse.json(results);
+    return NextResponse.json(data);
   } catch (error) {
     console.log("[FILES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
