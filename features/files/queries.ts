@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { File } from "@/types";
+import { File, FileUser } from "@/types";
 
 export const getFiles = async () => {
   const res = await axios.get("/api/files");

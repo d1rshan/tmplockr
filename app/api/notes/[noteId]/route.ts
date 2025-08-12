@@ -30,12 +30,13 @@ export async function DELETE(
       return new NextResponse("Note Not Found", { status: 400 });
     }
 
-    await db
+    const [user] = await db
       .update(usersTable)
       .set({ notesUsed: sql`${usersTable.notesUsed} - 1` })
-      .where(eq(usersTable.id, userId));
+      .where(eq(usersTable.id, userId))
+      .returning();
 
-    return NextResponse.json(note);
+    return NextResponse.json({ note, user });
   } catch (error) {
     console.log("[NOTE_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });

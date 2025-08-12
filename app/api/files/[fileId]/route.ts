@@ -40,12 +40,13 @@ export async function DELETE(
       return new NextResponse("File Not Found", { status: 400 });
     }
 
-    await db
+    const [user] = await db
       .update(usersTable)
       .set({ storageUsed: sql`${usersTable.storageUsed} - ${file.size}` })
-      .where(eq(usersTable.id, userId));
+      .where(eq(usersTable.id, userId))
+      .returning();
 
-    return NextResponse.json(file);
+    return NextResponse.json({ file, user });
   } catch (error) {
     console.error("[FILES_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });

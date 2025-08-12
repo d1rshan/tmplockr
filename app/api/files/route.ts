@@ -49,12 +49,14 @@ export async function POST(req: Request) {
     const files = await db.insert(filesTable).values(values).returning();
 
     const updatedStorageUsed = storageUsed + totalSize;
-    await db
+
+    const [updatedUser] = await db
       .update(usersTable)
       .set({ storageUsed: updatedStorageUsed })
-      .where(eq(usersTable.id, userId));
+      .where(eq(usersTable.id, userId))
+      .returning();
 
-    return NextResponse.json(files);
+    return NextResponse.json({ files, user: updatedUser });
   } catch (error) {
     console.log("[FILES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -22,3 +22,14 @@ export type File = {
   imagekitId: string;
   uploadedAt?: Date;
 };
+
+export type FileUser = {
+  file: File | undefined;
+  files: File[] | undefined;
+  user: User;
+};
+
+export type NoteUser = {
+  note: Note;
+  user: User;
+};

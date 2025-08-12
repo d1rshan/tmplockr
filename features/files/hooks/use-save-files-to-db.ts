@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { File } from "@/types";
+import { File, FileUser, User } from "@/types";
 
 import { uploadFiles } from "../queries";
 
@@ -12,9 +12,11 @@ export const useSaveFilesToDB = () => {
     mutationFn: ({ uploadResults }: { uploadResults: File[] }) =>
       uploadFiles(uploadResults),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["files"] });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+    onSuccess: (data: FileUser) => {
+      queryClient.setQueryData<File[]>(["files"], (prev) =>
+        prev ? [...prev, ...data.files!] : [...data.files!]
+      );
+      queryClient.setQueryData<User>(["user"], () => data.user);
       toast.success("Files Uploaded");
     },
   });

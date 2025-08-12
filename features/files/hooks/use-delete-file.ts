@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { File, FileUser, User } from "@/types";
 
 import { deleteFile } from "../queries";
 
@@ -14,9 +17,12 @@ export const useDeleteFile = () => {
       imagekitId: string;
     }) => deleteFile(fileId, imagekitId),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["files"] });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+    onSuccess: (data: FileUser) => {
+      queryClient.setQueryData<File[]>(["files"], (prev) =>
+        prev?.filter((item) => item.id != data.file!.id)
+      );
+      queryClient.setQueryData<User>(["user"], () => data.user);
+      toast.success("File Deleted");
     },
   });
 };

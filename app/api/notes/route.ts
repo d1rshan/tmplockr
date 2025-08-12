@@ -41,12 +41,13 @@ export async function POST(req: Request) {
 
     const updatedNotesUsed = notesUsed + 1;
 
-    await db
+    const [updatedUser] = await db
       .update(usersTable)
       .set({ notesUsed: updatedNotesUsed })
-      .where(eq(usersTable.id, userId));
+      .where(eq(usersTable.id, userId))
+      .returning();
 
-    return NextResponse.json(note);
+    return NextResponse.json({ note, user: updatedUser });
   } catch (error) {
     console.log("[NOTES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
