@@ -11,6 +11,7 @@ import { SignoutButton } from "./_components/signout-button";
 import { UploadCard } from "./_components/upload-card";
 import { YourUploadsCard } from "./_components/your-uploads-card";
 import { UserCard } from "./_components/user-card";
+import { ShareCard } from "./_components/share-card";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -80,6 +81,7 @@ export default async function DashboardPage() {
             <UserCard />
             <UploadCard />
             <YourUploadsCard />
+            <ShareCard />
           </div>
         </main>
       </div>

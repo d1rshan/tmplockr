@@ -53,12 +53,12 @@ export function UploadProvider({ children }: { children: ReactNode }) {
     setProgress(0);
 
     let progress = 0;
-    const progressIncrement = 7; // % to increment per tick
+    const progressIncrement = 8; // % to increment per tick
     const intervalMs = 100; // interval duration in ms
 
     // Start interval to simulate progress
     const progressTimer = setInterval(() => {
-      progress = Math.min(progress + progressIncrement, 100); // cap at 99% until done
+      progress = Math.min(progress + progressIncrement, 99); // cap at 99% until done
       setProgress(progress);
     }, intervalMs);
 
