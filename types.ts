@@ -13,8 +13,8 @@ export type Note = {
 };
 
 export type File = {
-  id?: string;
-  userId?: string;
+  id: string;
+  userId: string;
   name: string;
   size: number;
   type: string;
