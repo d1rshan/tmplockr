@@ -1,32 +1,5 @@
 "use client";
 
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { useUser } from "@/features/user/hooks/use-user";
-
-// export const UserCard = () => {
-//   const { data: user } = useUser();
-
-//   return (
-//     <Card>
-//       <CardHeader>
-//         <CardTitle>Usage Details</CardTitle>
-//         <CardDescription>FILES LIMIT: 50MB btw NOTES: 10</CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         {user && user.notesUsed} Notes Used!
-//         <br />
-//         {user && (user.storageUsed / (1024 * 1024)).toFixed(2)}MB Storage Used!
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
 import {
   Label,
   PolarGrid,
@@ -90,7 +63,7 @@ export function UserCard() {
               <RadialBarChart
                 data={[item]}
                 startAngle={0}
-                endAngle={(item.value / item.max) * 360} // ✅ arc length depends on usage
+                endAngle={(item.value / item.max) * 360}
                 innerRadius={80}
                 outerRadius={110}
               >
@@ -130,7 +103,6 @@ export function UserCard() {
                               y={(viewBox.cy || 0) + 20}
                               className="fill-muted-foreground text-sm"
                             >
-                              {/* {percentage.toFixed(0)}% of {item.max}{" "} */}
                               {config.label}
                             </tspan>
                           </text>

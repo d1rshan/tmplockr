@@ -1,3 +1,4 @@
+import { and, isNotNull } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -49,4 +50,14 @@ export const notesTable = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
   },
   (t) => [index("notes_user_id_index").on(t.userId)]
+);
+
+export const sharedFilesNotesTable = pgTable(
+  "shared_files_notes",
+  {
+    code: integer("code").notNull(),
+    file_id: uuid("file_id").references(() => filesTable.id),
+    note_id: uuid("note_id").references(() => notesTable.id),
+  },
+  (t) => [index("shared_files_notes_code_index").on(t.code)]
 );
