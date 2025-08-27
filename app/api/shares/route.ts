@@ -53,3 +53,23 @@ async function generateUniqueCode(): Promise<number> {
 
   return code!;
 }
+
+export async function GET(req: Request) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Not Authorized", { status: 401 });
+    }
+
+    const userShares = await db
+      .select()
+      .from(codesTable)
+      .where(eq(codesTable.userId, userId));
+
+    return NextResponse.json(userShares);
+  } catch (error) {
+    console.log("[SHARES_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
