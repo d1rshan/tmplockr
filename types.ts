@@ -23,6 +23,11 @@ export type File = {
   uploadedAt?: Date;
 };
 
+export type Share = {
+  code: number;
+  userId: string;
+};
+
 export type FileUser = {
   file: File | undefined;
   files: File[] | undefined;

@@ -6,16 +6,9 @@ import {
   Download,
   FileIcon,
   FileTextIcon,
-  Forward,
-  ForwardIcon,
   Link2,
-  LucideShare,
-  MessageSquareShare,
   Share,
-  Share2,
-  SquareArrowOutUpRight,
   Trash2,
-  Upload,
 } from "lucide-react";
 import Link from "next/link";
 import { saveAs } from "file-saver";
