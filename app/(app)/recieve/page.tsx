@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import axios from "axios";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,15 +16,16 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useState } from "react";
-import { number } from "zod";
 
 export default function RecievePage() {
   const [code, setCode] = useState<string>("");
 
-  const handleSubmit = () => {
-    const otp = number(code);
-    console.log(otp);
+  const handleSubmit = async () => {
+    if (code.length != 4) {
+      return;
+    }
+    const res = await axios.get(`/api/shares/${code}`);
+    console.log(res.data);
   };
 
   return (
@@ -45,7 +49,9 @@ export default function RecievePage() {
           </InputOTP>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button onClick={handleSubmit} disabled={code.length != 4}>
+            Submit
+          </Button>
         </CardFooter>
       </Card>
     </div>
