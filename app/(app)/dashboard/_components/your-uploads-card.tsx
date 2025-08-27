@@ -29,6 +29,7 @@ import { useDeleteNote } from "@/features/notes/hooks/use-delete-note";
 import { useNotes } from "@/features/notes/hooks/use-notes";
 import { useFiles } from "@/features/files/hooks/use-files";
 import { useDeleteFile } from "@/features/files/hooks/use-delete-file";
+import { useCreateShare } from "@/features/shares/hooks/use-create-share";
 
 export const YourUploadsCard = () => {
   const { data: notes = [] } = useNotes();
@@ -36,6 +37,8 @@ export const YourUploadsCard = () => {
 
   const { data: files = [] } = useFiles();
   const { mutate: deleteFile, isPending: isDeletingFile } = useDeleteFile();
+
+  const { mutate: createShare } = useCreateShare();
 
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
@@ -62,6 +65,7 @@ export const YourUploadsCard = () => {
         ", "
       )}\nSelected Notes: ${selectedNotes.join(", ")}`
     );
+    createShare({ fileIds: selectedFiles, noteIds: selectedNotes });
   };
 
   const copyNote = async (title: string, text: string) => {
@@ -78,11 +82,13 @@ export const YourUploadsCard = () => {
     <Card>
       <CardHeader>
         <CardTitle>Your Uploads</CardTitle>
-        <CardAction>
-          <Button variant="ghost" size="icon" onClick={handleSubmit}>
-            <Share className="h-4 w-4" />
-          </Button>
-        </CardAction>
+        {(selectedFiles.length > 0 || selectedNotes.length > 0) && (
+          <CardAction>
+            <Button variant="ghost" size="icon" onClick={handleSubmit}>
+              <Share className="h-4 w-4" />
+            </Button>
+          </CardAction>
+        )}
         <CardDescription>
           All your files, images and notes in one place
         </CardDescription>

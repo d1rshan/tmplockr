@@ -14,6 +14,10 @@ export async function POST(req: Request) {
 
     const { fileIds, noteIds } = await req.json();
 
+    if (!fileIds || !noteIds) {
+      return new NextResponse("FileIds or NoteIds Missing", { status: 400 });
+    }
+
     const code = await generateUniqueCode();
 
     await db.insert(codesTable).values({
@@ -21,12 +25,16 @@ export async function POST(req: Request) {
       userId,
     });
 
-    await db
-      .insert(sharedFilesNotesTable)
-      .values([
-        ...fileIds.map((fileId: string) => [{ code, file_id: fileId }]),
-        ...noteIds.map((noteId: string) => [{ code, note_id: noteId }]),
-      ]);
+    await db.insert(sharedFilesNotesTable).values([
+      ...fileIds.map((fileId: string) => ({
+        code,
+        file_id: fileId,
+      })),
+      ...noteIds.map((noteId: string) => ({
+        code,
+        note_id: noteId,
+      })),
+    ]);
 
     return NextResponse.json(code);
   } catch (error) {
@@ -36,11 +44,8 @@ export async function POST(req: Request) {
 }
 
 async function generateUniqueCode(): Promise<number> {
-  let code: number;
-  let exists = true;
-
-  while (exists) {
-    code = Math.floor(1000 + Math.random() * 9000);
+  while (true) {
+    const code = Math.floor(1000 + Math.random() * 9000);
 
     const existing = await db
       .select()
@@ -48,10 +53,10 @@ async function generateUniqueCode(): Promise<number> {
       .where(eq(codesTable.code, code))
       .limit(1);
 
-    exists = existing.length > 0;
+    if (existing.length === 0) {
+      return code;
+    }
   }
-
-  return code!;
 }
 
 export async function GET(req: Request) {

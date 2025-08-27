@@ -65,9 +65,9 @@ export const codesTable = pgTable(
 export const sharedFilesNotesTable = pgTable(
   "shared_files_notes",
   {
-    code: integer("code")
-      .references(() => codesTable.code, { onDelete: "cascade" })
-      .notNull(),
+    code: integer("code").references(() => codesTable.code, {
+      onDelete: "cascade",
+    }),
     file_id: uuid("file_id").references(() => filesTable.id, {
       onDelete: "cascade",
     }),
