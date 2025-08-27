@@ -86,6 +86,8 @@ export function UploadProvider({ children }: { children: ReactNode }) {
             toast.success(`${file.name} Uploaded`);
 
             return {
+              id: "", // for local state updates
+              userId: "",
               name: file.name,
               size: file.size,
               type: file.type,
