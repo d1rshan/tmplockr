@@ -52,12 +52,28 @@ export const notesTable = pgTable(
   (t) => [index("notes_user_id_index").on(t.userId)]
 );
 
+export const codesTable = pgTable(
+  "codes",
+  {
+    code: integer("code").primaryKey(),
+    userId: text("user_id").references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
+  },
+  (t) => [index("codes_user_id_index").on(t.userId)]
+);
 export const sharedFilesNotesTable = pgTable(
   "shared_files_notes",
   {
-    code: integer("code").notNull(),
-    file_id: uuid("file_id").references(() => filesTable.id),
-    note_id: uuid("note_id").references(() => notesTable.id),
+    code: integer("code")
+      .references(() => codesTable.code, { onDelete: "cascade" })
+      .notNull(),
+    file_id: uuid("file_id").references(() => filesTable.id, {
+      onDelete: "cascade",
+    }),
+    note_id: uuid("note_id").references(() => notesTable.id, {
+      onDelete: "cascade",
+    }),
   },
   (t) => [index("shared_files_notes_code_index").on(t.code)]
 );
