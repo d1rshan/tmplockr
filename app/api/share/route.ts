@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { sharedFilesNotesTable } from "@/lib/db/schema";
+import { codesTable, sharedFilesNotesTable } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -15,6 +15,11 @@ export async function POST(req: Request) {
     const { fileIds, noteIds } = await req.json();
 
     const code = await generateUniqueCode();
+
+    await db.insert(codesTable).values({
+      code,
+      userId,
+    });
 
     await db
       .insert(sharedFilesNotesTable)
@@ -39,8 +44,8 @@ async function generateUniqueCode(): Promise<number> {
 
     const existing = await db
       .select()
-      .from(sharedFilesNotesTable)
-      .where(eq(sharedFilesNotesTable.code, code))
+      .from(codesTable)
+      .where(eq(codesTable.code, code))
       .limit(1);
 
     exists = existing.length > 0;
