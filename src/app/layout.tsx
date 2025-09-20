@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
 import "./globals.css";
+import { Navbar } from "@/components/navbar";
+import { GridBackground } from "@/components/grid-background";
 
 const geist = Geist({
   variable: "--font-geist",
@@ -27,13 +29,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.variable}  ${geist_mono.variable} antialiased`}>
+      <body className={`${geist_mono.variable} font-mono relative antialiased`}>
         <ThemeProvider
           attribute={"class"}
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <Navbar />
+          <GridBackground />
           {children}
         </ThemeProvider>
       </body>
