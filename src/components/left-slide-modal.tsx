@@ -224,18 +224,9 @@ export const ModalButton = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [isModalOpen]);
 
-  const enter = `
-███████╗███╗   ██╗████████╗███████╗██████╗
-██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔══██╗
-█████╗  ██╔██╗ ██║   ██║   █████╗  ██████╔╝
-██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗
-███████╗██║ ╚████║   ██║   ███████╗██║  ██║
-╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-  `;
-
   return (
     <>
-      <Button size={"lg"} onClick={() => setIsModalOpen(true)}>
+      <Button size={"sm"} onClick={() => setIsModalOpen(true)}>
         {children}
       </Button>
 
@@ -258,28 +249,42 @@ export const ModalButton = ({ children }: { children: React.ReactNode }) => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.2 }}
             >
-              <div
-                className="absolute -top-5 -right-7 cursor-pointer"
-                onClick={() => setIsModalOpen(false)}
-              >
-                <XIcon />
-              </div>
-              <pre className="[line-height:1] text-[10px]">{enter}</pre>
-              <input
-                className="font-mono p-2 rounded-md border border-neutral-100"
-                placeholder="username"
-              />
-              <input
-                className="font-mono p-2 rounded-md border border-neutral-100"
-                placeholder="password"
-              />
-              <Button className="bg-neutral-100 text-background ">
-                Submit
-              </Button>
+              <EnterModal setIsModalOpen={setIsModalOpen} />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+    </>
+  );
+};
+
+export const EnterModal = ({ setIsModalOpen }: { setIsModalOpen: any }) => {
+  const enter = `
+███████╗███╗   ██╗████████╗███████╗██████╗
+██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔══██╗
+█████╗  ██╔██╗ ██║   ██║   █████╗  ██████╔╝
+██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗
+███████╗██║ ╚████║   ██║   ███████╗██║  ██║
+╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+  `;
+  return (
+    <>
+      <div
+        className="absolute -top-5 -right-7 cursor-pointer"
+        onClick={() => setIsModalOpen(false)}
+      >
+        <XIcon />
+      </div>
+      <pre className="ascii-art text-[6px] sm:text-[8px]">{enter}</pre>
+      <input
+        className="font-mono p-2 rounded-md border border-neutral-100"
+        placeholder="username"
+      />
+      <input
+        className="font-mono p-2 rounded-md border border-neutral-100"
+        placeholder="password"
+      />
+      <Button className="bg-neutral-100 text-background ">Submit</Button>
     </>
   );
 };

@@ -34,9 +34,11 @@ export const Hero = () => {
   `;
 
   return (
-    <div className="flex flex-col items-center justify-center ">
-      <pre className="[line-height:1] text-neutral-50">{hero}</pre>
-      <div className="flex gap-x-2 ">
+    <div className="flex flex-col items-center justify-center">
+      <pre className="ascii-art text-neutral-50 text-[6px] sm:text-xs lg:text-sm whitespace-pre-wrap ">
+        {hero}
+      </pre>
+      <div className="flex">
         <ModalButton>Enter</ModalButton>
         <ModalButton>Recieve</ModalButton>
       </div>
