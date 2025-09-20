@@ -267,6 +267,15 @@ export const EnterModal = ({ setIsModalOpen }: { setIsModalOpen: any }) => {
 ███████╗██║ ╚████║   ██║   ███████╗██║  ██║
 ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
   `;
+
+  const login = `
+██╗      ██████╗  ██████╗     ██╗███╗   ██╗
+██║     ██╔═══██╗██╔════╝     ██║████╗  ██║
+██║     ██║   ██║██║  ███╗    ██║██╔██╗ ██║
+██║     ██║   ██║██║   ██║    ██║██║╚██╗██║
+███████╗╚██████╔╝╚██████╔╝    ██║██║ ╚████║
+╚══════╝ ╚═════╝  ╚═════╝     ╚═╝╚═╝  ╚═══╝
+  `;
   return (
     <>
       <div
@@ -275,16 +284,20 @@ export const EnterModal = ({ setIsModalOpen }: { setIsModalOpen: any }) => {
       >
         <XIcon />
       </div>
-      <pre className="ascii-art text-[6px] sm:text-[8px]">{enter}</pre>
-      <input
-        className="font-mono p-2 rounded-md border border-neutral-100"
-        placeholder="username"
-      />
-      <input
-        className="font-mono p-2 rounded-md border border-neutral-100"
-        placeholder="password"
-      />
-      <Button className="bg-neutral-100 text-background ">Submit</Button>
+      <pre className="ascii-art text-[6px] lg:text-[8px]">{login}</pre>
+      {/* <h1 className="font-bold text-2xl font-mono">Enter TmpLockr</h1> */}
+      <Input placeholder="username" />
+      <Input placeholder="password" />
+      <Button>Submit</Button>
     </>
+  );
+};
+
+export const Input = ({ placeholder }: { placeholder: string }) => {
+  return (
+    <input
+      className="font-mono px-2 py-1 outline-none border-b-[0.1px] border-neutral-100 shadow-none "
+      placeholder={placeholder}
+    />
   );
 };
