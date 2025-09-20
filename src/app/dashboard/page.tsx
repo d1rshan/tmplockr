@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,7 +21,10 @@ export default function DashboardPage() {
         <CardHeader separator>
           <CardTitle>YOUR FILES & NOTES</CardTitle>
         </CardHeader>
-        <CardContent></CardContent>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <SimpleFileTable showCheckboxes rowsPerPage={5} />
+          <SimpleFileTable rowsPerPage={5} />
+        </CardContent>
       </Card>
     </div>
   );
@@ -123,5 +128,137 @@ export const QuickActionsCard = () => {
         </Card>
       </CardContent>
     </Card>
+  );
+};
+
+import * as React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const files = [
+  "project-report.pdf",
+  "meeting-notes.docx",
+  "budget-summary-q1.xlsx",
+  "user-interface-design.sketch",
+  "server-configuration.env",
+  "client-feedback.txt",
+];
+
+type SimpleFileTableProps = {
+  showCheckboxes?: boolean;
+  rowsPerPage?: number;
+};
+
+export const SimpleFileTable = ({
+  showCheckboxes = false,
+  rowsPerPage = 3,
+}: SimpleFileTableProps) => {
+  const [page, setPage] = React.useState(0);
+  const [selected, setSelected] = React.useState<number[]>([]);
+
+  const totalPages = Math.ceil(files.length / rowsPerPage);
+  const start = page * rowsPerPage;
+  const paginatedFiles = files.slice(start, start + rowsPerPage);
+
+  const toggleAll = (checked: boolean) => {
+    if (checked) {
+      setSelected(paginatedFiles.map((_, i) => start + i));
+    } else {
+      setSelected([]);
+    }
+  };
+
+  const toggleRow = (index: number, checked: boolean) => {
+    if (checked) {
+      setSelected((prev) => [...prev, index]);
+    } else {
+      setSelected((prev) => prev.filter((x) => x !== index));
+    }
+  };
+
+  return (
+    <div className="w-full space-y-4">
+      <div className="overflow-hidden rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {showCheckboxes && (
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={
+                      selected.length === paginatedFiles.length &&
+                      paginatedFiles.length > 0
+                    }
+                    onCheckedChange={(value) => toggleAll(!!value)}
+                  />
+                </TableHead>
+              )}
+              <TableHead>FILES</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedFiles.length > 0 ? (
+              paginatedFiles.map((file, i) => {
+                const globalIndex = start + i;
+                return (
+                  <TableRow key={globalIndex}>
+                    {showCheckboxes && (
+                      <TableCell>
+                        <Checkbox
+                          checked={selected.includes(globalIndex)}
+                          onCheckedChange={(value) =>
+                            toggleRow(globalIndex, !!value)
+                          }
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell>{file}</TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={showCheckboxes ? 2 : 1}
+                >
+                  No files found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination controls */}
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((p) => Math.max(0, p - 1))}
+          disabled={page === 0}
+        >
+          Prev
+        </Button>
+        <span className="text-sm">
+          Page {page + 1} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          disabled={page === totalPages - 1}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
   );
 };
