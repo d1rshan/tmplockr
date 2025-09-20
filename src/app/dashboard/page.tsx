@@ -23,7 +23,7 @@ export default function DashboardPage() {
     <div className="px-4 pt-17 max-w-6xl mx-auto grid grid-cols-1 gap-4">
       <UsageDetailsCard />
       <QuickActionsCard />
-      <Card>
+      <Card className="mb-4">
         <CardHeader separator>
           <CardTitle>FILES, NOTES & SHARES</CardTitle>
         </CardHeader>
