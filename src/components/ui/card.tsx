@@ -26,7 +26,7 @@ function CardHeader({
       className={cn(
         "@container/card-header  pt-4 grid auto-rows-min grid-rows-[auto_auto] items-start gap-0 px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         separator
-          ? "border-b [.border-b]:pb-2 font-semibold bg-[#ECEEF0] dark:bg-[#1E1E24]"
+          ? "border-b [.border-b]:pb-3 font-semibold bg-[#ECEEF0] dark:bg-[#1E1E24]"
           : "[.border-b]:pb-0 font-medium",
         className
       )}
@@ -49,7 +49,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-sm font-normal", className)}
       {...props}
     />
   );

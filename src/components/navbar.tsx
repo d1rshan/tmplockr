@@ -1,8 +1,18 @@
 import { ModeToggle } from "./mode-toggle";
 
+const logo = `
+████████╗███╗   ███╗██████╗ ██╗      ██████╗  ██████╗██╗  ██╗██████╗ 
+╚══██╔══╝████╗ ████║██╔══██╗██║     ██╔═══██╗██╔════╝██║ ██╔╝██╔══██╗
+   ██║   ██╔████╔██║██████╔╝██║     ██║   ██║██║     █████╔╝ ██████╔╝
+   ██║   ██║╚██╔╝██║██╔═══╝ ██║     ██║   ██║██║     ██╔═██╗ ██╔══██╗
+   ██║   ██║ ╚═╝ ██║██║     ███████╗╚██████╔╝╚██████╗██║  ██╗██║  ██║
+   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝
+  `;
+
 export const Navbar = () => {
   return (
-    <nav className="z-10 fixed top-0 left-0  bg-[#ECEEF0]/65 dark:bg-[#1E1E24]/65 backdrop-blur-md flex justify-end p-2  border-b-[0.5px]  inset-x-0">
+    <nav className="z-10 fixed top-0 left-0 bg-[#ECEEF0]/65 dark:bg-[#1E1E24]/65 backdrop-blur-md flex justify-between font-bold items-center p-2  border-b-[0.5px]  inset-x-0">
+      <pre className="ascii-art text-[4px] ml-4">{logo}</pre>
       <ModeToggle />
     </nav>
   );

@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   InputOTP,
@@ -19,11 +25,14 @@ export default function DashboardPage() {
       <QuickActionsCard />
       <Card>
         <CardHeader separator>
-          <CardTitle>YOUR FILES & NOTES</CardTitle>
+          <CardTitle>FILES, NOTES & SHARES</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <SimpleFileTable showCheckboxes rowsPerPage={5} />
-          <SimpleFileTable rowsPerPage={5} />
+          <DataTable showCheckboxes data={data} title="FILES" rowsPerPage={5} />
+          <DataTable data={data} title="NOTES" rowsPerPage={5} />
+          <div className="sm:col-span-2">
+            <DataTable data={data} title="SHARES" rowsPerPage={5} />
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -39,21 +48,30 @@ export const UsageDetailsCard = () => {
       <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>USED STORAGE</CardTitle>
+            <CardTitle className="flex justify-between">
+              <span>USED STORAGE</span>
+              <span className="sm:hidden font-normal">20/100 MB</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent>20/100 MB</CardContent>
+          <CardContent className="hidden sm:block">20/100 MB</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>NOTES CREATED</CardTitle>
+            <CardTitle className="flex justify-between">
+              <span>NOTES CREATED</span>
+              <span className="sm:hidden">2/10</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent>2/10</CardContent>
+          <CardContent className="hidden sm:block">2/10</CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>ACTIVE SHARES</CardTitle>
+            <CardTitle className="flex justify-between">
+              <span>ACTIVE SHARES</span>
+              <span className="sm:hidden">2/5</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent>2/5</CardContent>
+          <CardContent className="hidden sm:block">2/5</CardContent>
         </Card>
       </CardContent>
     </Card>
@@ -66,21 +84,26 @@ export const QuickActionsCard = () => {
       <CardHeader separator>
         <CardTitle>QUICK ACTIONS</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-        <Card className="sm:col-span-3 sm:row-span-3">
+      <CardContent className="grid grid-cols-1 sm:grid-cols-7 gap-4">
+        <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>UPLOAD FILES</CardTitle>
+            <CardDescription>0 FILES SELECTED, 80MB LEFT.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant={"outline"} className="w-full">
-              SELECT
-            </Button>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="border border-dashed h-20 rounded-md flex justify-center items-center cursor-pointer bg-[#ECEEF0] dark:bg-[#1E1E24]">
+                DRAG FILES OR CLICK HERE
+              </div>
+            </div>
           </CardContent>
         </Card>
-        <Card className="sm:row-span-4 sm:col-span-2">
+
+        <Card className="sm:row-span-3 sm:col-span-3">
           <CardHeader>
             <CardTitle>CREATE NOTE</CardTitle>
           </CardHeader>
+
           <CardContent>
             <form>
               <div className="grid gap-6 h-full">
@@ -90,7 +113,7 @@ export const QuickActionsCard = () => {
                 </div>
                 <div className="grid gap-2 h-full">
                   <Label htmlFor="password">CONTENT</Label>
-                  <Textarea className="resize-none w-full h-full max-h-10" />
+                  <Textarea className="resize-none h-50" />
                 </div>
                 <Button
                   asChild
@@ -104,7 +127,23 @@ export const QuickActionsCard = () => {
             </form>
           </CardContent>
         </Card>
-        <Card className="sm:col-span-3 sm:row-span-1">
+        <Card className="sm:col-span-4">
+          <CardHeader>
+            <CardTitle>SHARE FILES & NOTES</CardTitle>
+            <CardDescription>0 FILES, 0 NOTES SELECTED.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant={"outline"} className="w-full">
+                SELECT
+              </Button>
+              <Button variant={"outline"} className="w-full">
+                SHARE
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>RECIEVE FILES</CardTitle>
           </CardHeader>
@@ -142,7 +181,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const files = [
+const data = [
   "project-report.pdf",
   "meeting-notes.docx",
   "budget-summary-q1.xlsx",
@@ -151,25 +190,29 @@ const files = [
   "client-feedback.txt",
 ];
 
-type SimpleFileTableProps = {
+type DataTableProps = {
+  title: string;
+  data: string[];
   showCheckboxes?: boolean;
   rowsPerPage?: number;
 };
 
-export const SimpleFileTable = ({
+export const DataTable = ({
+  title,
+  data,
   showCheckboxes = false,
   rowsPerPage = 3,
-}: SimpleFileTableProps) => {
+}: DataTableProps) => {
   const [page, setPage] = React.useState(0);
   const [selected, setSelected] = React.useState<number[]>([]);
 
-  const totalPages = Math.ceil(files.length / rowsPerPage);
+  const totalPages = Math.ceil(data.length / rowsPerPage);
   const start = page * rowsPerPage;
-  const paginatedFiles = files.slice(start, start + rowsPerPage);
+  const paginatedData = data.slice(start, start + rowsPerPage);
 
   const toggleAll = (checked: boolean) => {
     if (checked) {
-      setSelected(paginatedFiles.map((_, i) => start + i));
+      setSelected(paginatedData.map((_, i) => start + i));
     } else {
       setSelected([]);
     }
@@ -188,24 +231,24 @@ export const SimpleFileTable = ({
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="border-0">
               {showCheckboxes && (
-                <TableHead className="w-10">
+                <TableHead>
                   <Checkbox
                     checked={
-                      selected.length === paginatedFiles.length &&
-                      paginatedFiles.length > 0
+                      selected.length === paginatedData.length &&
+                      paginatedData.length > 0
                     }
                     onCheckedChange={(value) => toggleAll(!!value)}
                   />
                 </TableHead>
               )}
-              <TableHead>FILES</TableHead>
+              <TableHead>{title}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedFiles.length > 0 ? (
-              paginatedFiles.map((file, i) => {
+            {paginatedData.length > 0 ? (
+              paginatedData.map((file, i) => {
                 const globalIndex = start + i;
                 return (
                   <TableRow key={globalIndex}>
