@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   InputOTP,
   InputOTPGroup,
@@ -14,7 +20,7 @@ export const RecieveForm = () => {
       </CardHeader>
       <CardContent>
         <form>
-          <div className="grid grid-cols-2">
+          <div className="flex justify-between">
             <InputOTP maxLength={4}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
