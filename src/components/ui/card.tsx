@@ -24,7 +24,7 @@ function CardHeader({
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header relative  pt-4 grid auto-rows-min grid-rows-[auto_auto] items-start gap-0 px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
+        "@container/card-header relative pt-4 grid auto-rows-min grid-rows-[auto_auto] items-start gap-0 px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         separator
           ? "border-b [.border-b]:pb-3 font-semibold bg-[#ECEEF0] dark:bg-[#1E1E24] before:content-[''] before:absolute before:inset-0 before:bg-[repeating-linear-gradient(-45deg,var(--color-border)_0px,var(--color-border)_1.5px,transparent_1.5px,transparent_4px)] before:opacity-20 before:-z-10 z-1 overflow-hidden "
           : "[.border-b]:pb-0 font-medium",
