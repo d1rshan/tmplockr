@@ -79,6 +79,29 @@ export const UsageDetailsCard = () => {
 };
 
 export const QuickActionsCard = () => {
+  const fileInputRef = React.useRef(null);
+  const [files, setFiles] = React.useState<File[]>([]);
+  const handleFiles = (files: File[]) => {
+    setFiles((prev) => [...prev, ...Array.from(files)]);
+  };
+
+  const handleDrop = (e: any) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+      e.dataTransfer.clearData();
+    }
+  };
+
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleChange = (e: any) => {
+    if (e.target.files) handleFiles(e.target.files);
+  };
   return (
     <Card>
       <CardHeader separator>
@@ -88,13 +111,28 @@ export const QuickActionsCard = () => {
         <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>UPLOAD FILES</CardTitle>
-            <CardDescription>0 FILES SELECTED, 80MB LEFT.</CardDescription>
+            <CardDescription>{`${files.length} FILES SELECTED, ${(
+              Array.from(files).reduce((acc, file) => acc + file.size, 0) /
+              (1024 * 1024)
+            ).toFixed(2)} MB TOTAL.`}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-2">
-              <div className="border border-dashed h-20 rounded-md flex justify-center items-center cursor-pointer bg-[#ECEEF0] dark:bg-[#1E1E24]">
+              <div
+                className="border border-dashed h-20 rounded-md flex justify-center items-center cursor-pointer bg-[#ECEEF0] dark:bg-[#1E1E24]"
+                onClick={handleClick}
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+              >
                 DRAG FILES OR CLICK HERE
               </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleChange}
+                className="hidden"
+                multiple
+              />
             </div>
           </CardContent>
         </Card>
@@ -127,6 +165,7 @@ export const QuickActionsCard = () => {
             </form>
           </CardContent>
         </Card>
+
         <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>SHARE FILES & NOTES</CardTitle>
@@ -262,7 +301,7 @@ export const DataTable = ({
                         />
                       </TableCell>
                     )}
-                    <TableCell>{file}</TableCell>
+                    <TableCell>{file.toUpperCase()}</TableCell>
                   </TableRow>
                 );
               })

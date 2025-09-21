@@ -33,7 +33,7 @@ export const Navbar = () => {
         {isDashboard && (
           <Button variant="outline">
             <span className="hidden sm:block">SIGN OUT</span>
-            <LogOut className="sm:hidden" />
+            <LogOut className="" />
           </Button>
         )}
         <ModeToggle />
