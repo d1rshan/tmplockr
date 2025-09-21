@@ -32,8 +32,7 @@ export const Navbar = () => {
       <div className="flex-1 flex justify-end gap-2 items-center">
         {isDashboard && (
           <Button variant="outline">
-            <span className="hidden sm:block">SIGN OUT</span>
-            <LogOut className="" />
+            <LogOut />
           </Button>
         )}
         <ModeToggle />
