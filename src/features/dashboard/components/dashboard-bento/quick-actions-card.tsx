@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 export const QuickActionsCard = () => {
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const handleFiles = (files: File[]) => {
     setFiles((prev) => [...prev, ...Array.from(files)]);
@@ -58,9 +58,9 @@ export const QuickActionsCard = () => {
             ).toFixed(2)} MB TOTAL.`}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-4">
               <div
-                className="border border-dashed h-20 rounded-md flex justify-center items-center cursor-pointer bg-[#ECEEF0] dark:bg-[#1E1E24]"
+                className="h-20 border-2 border-dashed active:bg-border/30 dark:active:bg-border/50  hover:bg-border/30 dark:hover:bg-border/50 rounded-md flex justify-center items-center cursor-pointer  bg-[#ECEEF0] dark:bg-[#1E1E24] subtle-stripes"
                 onClick={handleClick}
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
@@ -85,7 +85,7 @@ export const QuickActionsCard = () => {
 
           <CardContent>
             <form>
-              <div className="grid gap-6 h-full">
+              <div className="grid gap-4 h-full">
                 <div className="grid gap-2">
                   <Label htmlFor="code">TITLE</Label>
                   <Input type="text" />

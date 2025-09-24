@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const data = [
   "project-report.pdf",
@@ -20,7 +21,7 @@ const data = [
   "user-interface-design.sketch",
   "server-configuration.env",
   "client-feedback.txt",
-];
+] as string[];
 
 type DataTableProps = {
   title: string;
@@ -75,7 +76,30 @@ export const DataTable = ({
                   />
                 </TableHead>
               )}
-              <TableHead>{title}</TableHead>
+              <TableHead className="flex items-center justify-between">
+                <span>{title}</span>
+                <div className="flex items-center justify-center ">
+                  <Button
+                    size="icon"
+                    variant={"custom"}
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={page === 0}
+                  >
+                    <ArrowLeft />
+                  </Button>
+
+                  <Button
+                    size="icon"
+                    variant={"custom"}
+                    onClick={() =>
+                      setPage((p) => Math.min(totalPages - 1, p + 1))
+                    }
+                    disabled={page === totalPages - 1}
+                  >
+                    <ArrowRight />
+                  </Button>
+                </div>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,7 +128,7 @@ export const DataTable = ({
                   className="h-24 text-center"
                   colSpan={showCheckboxes ? 2 : 1}
                 >
-                  No files found.
+                  NO DATA
                 </TableCell>
               </TableRow>
             )}
@@ -113,25 +137,6 @@ export const DataTable = ({
       </div>
 
       {/* Pagination controls */}
-      <div className="flex items-center justify-between">
-        <Button
-          size="sm"
-          onClick={() => setPage((p) => Math.max(0, p - 1))}
-          disabled={page === 0}
-        >
-          Prev
-        </Button>
-        <span className="text-sm">
-          Page {page + 1} of {totalPages}
-        </span>
-        <Button
-          size="sm"
-          onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-          disabled={page === totalPages - 1}
-        >
-          Next
-        </Button>
-      </div>
     </div>
   );
 };
@@ -143,7 +148,7 @@ export const FilesNotesSharesCard = () => {
         <CardTitle>FILES, NOTES & SHARES</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <DataTable showCheckboxes data={data} title="FILES" rowsPerPage={5} />
+        <DataTable data={data} title="FILES" rowsPerPage={5} />
         <DataTable data={data} title="NOTES" rowsPerPage={5} />
         <div className="sm:col-span-2">
           <DataTable data={data} title="SHARES" rowsPerPage={5} />

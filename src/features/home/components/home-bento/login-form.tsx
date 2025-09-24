@@ -18,7 +18,7 @@ export const LoginForm = () => {
       </CardHeader>
       <CardContent>
         <form>
-          <div className="grid gap-6">
+          <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="code">USERNAME</Label>
               <Input type="text" />

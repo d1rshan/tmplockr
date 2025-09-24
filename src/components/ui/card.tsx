@@ -26,7 +26,7 @@ function CardHeader({
       className={cn(
         "relative px-4",
         separator
-          ? "border-b min-h-10 flex items-center font-semibold bg-[#ECEEF0] dark:bg-[#1E1E24]  before:absolute before:inset-0 before:bg-[repeating-linear-gradient(-45deg,var(--color-border)_0px,var(--color-border)_1.5px,transparent_1.5px,transparent_4px)] before:opacity-20 before:-z-10 z-1 overflow-hidden "
+          ? "border-b min-h-10 flex items-center font-semibold bg-[#ECEEF0] dark:bg-[#1E1E24]  subtle-stripes"
           : "font-medium pt-2",
         className
       )}

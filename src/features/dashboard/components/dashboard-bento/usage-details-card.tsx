@@ -7,7 +7,7 @@ export const UsageDetailsCard = () => {
         <CardTitle>USAGE DETAILS</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card className="gap-2">
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>USED STORAGE</span>
@@ -16,7 +16,7 @@ export const UsageDetailsCard = () => {
           </CardHeader>
           <CardContent className="hidden sm:block">20/100 MB</CardContent>
         </Card>
-        <Card>
+        <Card className="gap-2">
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>NOTES CREATED</span>
@@ -25,7 +25,7 @@ export const UsageDetailsCard = () => {
           </CardHeader>
           <CardContent className="hidden sm:block">2/10</CardContent>
         </Card>
-        <Card>
+        <Card className="gap-2">
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>ACTIVE SHARES</span>
