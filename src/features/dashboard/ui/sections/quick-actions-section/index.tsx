@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-export const QuickActionsCard = () => {
+export const QuickActionsSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const handleFiles = (files: File[]) => {

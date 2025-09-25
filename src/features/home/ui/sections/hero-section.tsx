@@ -7,7 +7,7 @@ const hero = `
    ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝
   `;
 
-export const Hero = () => {
+export const HeroSection = () => {
   return (
     <pre className="ascii-art text-[6px] sm:text-xs lg:text-sm whitespace-pre-wrap text-center">
       {hero}

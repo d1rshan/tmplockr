@@ -1,11 +1,5 @@
-import { Hero } from "@/features/home/components/hero";
-import { HomeBento } from "@/features/home/components/home-bento";
+import HomeView from "@/features/home/ui/views/home-view";
 
-export default function Home() {
-  return (
-    <div className="min-h-screen pt-20 max-w-6xl mx-auto">
-      <Hero />
-      <HomeBento />
-    </div>
-  );
+export default function HomePage() {
+  return <HomeView />;
 }

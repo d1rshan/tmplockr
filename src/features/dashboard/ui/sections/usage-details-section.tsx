@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const UsageDetailsCard = () => {
+export const UsageDetailsSection = () => {
   return (
     <Card>
       <CardHeader separator>

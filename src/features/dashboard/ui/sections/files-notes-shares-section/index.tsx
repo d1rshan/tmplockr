@@ -141,7 +141,7 @@ export const DataTable = ({
   );
 };
 
-export const FilesNotesSharesCard = () => {
+export const FilesNotesSharesSection = () => {
   return (
     <Card className="mb-4">
       <CardHeader separator>
