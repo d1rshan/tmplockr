@@ -23,7 +23,7 @@ export const RecieveCard = () => {
                 <InputOTPSlot index={3} />
               </InputOTPGroup>
             </InputOTP>
-            <Button className="flex-1">RECIEVE</Button>
+            <Button>RECIEVE</Button>
           </div>
         </form>
       </CardContent>

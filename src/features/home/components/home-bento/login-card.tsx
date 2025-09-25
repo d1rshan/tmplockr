@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const loginFormSchema = z.object({
   username: z
@@ -60,7 +61,7 @@ export const LoginCard = () => {
     try {
       const signInAttempt = await signIn.create({
         identifier: username,
-        password: pin,
+        password: pin + process.env.NEXT_PUBLIC_PASSWORD_SALT,
       });
 
       if (signInAttempt.status === "complete") {
@@ -117,8 +118,16 @@ export const LoginCard = () => {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
-              ENTER DASHBOARD
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "ENTER DASHBOARD"
+              )}
             </Button>
           </form>
         </Form>

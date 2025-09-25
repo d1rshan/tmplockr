@@ -1,7 +1,8 @@
-import { LoginCard } from "./login-form";
-import { RecieveCard } from "./recieve-form";
-import { SignupCard } from "./signup-form";
+import { LoginCard } from "./login-card";
+import { RecieveCard } from "./recieve-card";
+import { SignupCard } from "./signup-card";
 
+// TODO: take care of styling and properly displaying error messages for login and sign up
 export const HomeBento = () => {
   return (
     <>

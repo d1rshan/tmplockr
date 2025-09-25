@@ -55,7 +55,6 @@ export const SignupCard = () => {
   });
 
   const {
-    setError,
     formState: { errors },
   } = form;
 
@@ -105,7 +104,7 @@ export const SignupCard = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col  h-full gap-4"
+            className="flex flex-col justify-center  h-full gap-4"
           >
             <FormField
               control={form.control}
