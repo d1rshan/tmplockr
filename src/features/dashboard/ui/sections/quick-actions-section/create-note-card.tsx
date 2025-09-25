@@ -35,6 +35,7 @@ export function CreateNoteCard() {
     } else {
       toast.error(res.message);
     }
+    form.reset();
   }
 
   return (

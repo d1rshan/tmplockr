@@ -51,6 +51,8 @@ export const notesTable = pgTable(
   (t) => [index("notes_user_id_index").on(t.userId)]
 );
 
+export type Note = typeof notesTable.$inferSelect;
+
 export const codesTable = pgTable(
   "codes",
   {

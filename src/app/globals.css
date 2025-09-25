@@ -123,9 +123,18 @@
   }
 }
 
-/* From Uiverse.io by Voxybuns */ 
 .ascii-art{
   line-height: 1;
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
 }
 
 .subtle-stripes {

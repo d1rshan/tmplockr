@@ -1,14 +1,12 @@
+import { cacheTags } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
-import { notesTable } from "@/lib/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { notesTable, type Note } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 
-export async function getNotes(): Promise<(typeof notesTable.$inferSelect)[]> {
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("UNAUTHORIZED");
-  }
+export async function getNotes(userId: string): Promise<Note[]> {
+  "use cache";
+  cacheTag(cacheTags.notes);
 
   const notes = await db
     .select()

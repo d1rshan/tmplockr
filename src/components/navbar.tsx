@@ -54,7 +54,12 @@ export const SignoutButton = () => {
     }
   }
   return (
-    <Button size="sm" onClick={handleSignout} disabled={isLoading}>
+    <Button
+      size="sm"
+      variant={"ghost"}
+      onClick={handleSignout}
+      disabled={isLoading}
+    >
       <LogOut />
     </Button>
   );
