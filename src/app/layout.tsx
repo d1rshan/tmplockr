@@ -9,11 +9,6 @@ import { GridBackground } from "@/components/grid-background";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 
-const geist = Geist({
-  variable: "--font-geist",
-  subsets: ["latin"],
-});
-
 const geist_mono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
