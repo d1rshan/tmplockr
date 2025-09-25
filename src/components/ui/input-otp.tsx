@@ -37,26 +37,39 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function InputOTPSlot({
+  mask,
   index,
   className,
   ...props
 }: React.ComponentProps<"div"> & {
   index: number;
+  mask?: boolean;
 }) {
   const inputOTPContext = React.useContext(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
+
+  const maskChars = ["$", "#", "@", "%"];
+
+  const maskedChar = React.useMemo(() => {
+    if (!char) return null;
+    return mask
+      ? maskChars[Math.floor(Math.random() * maskChars.length)]
+      : char;
+  }, [char, mask]);
 
   return (
     <div
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        "  border relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md ",
+        "border relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md ",
+        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+
         className
       )}
       {...props}
     >
-      {char}
+      {char && (mask ? maskedChar : char)}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />

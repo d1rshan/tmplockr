@@ -4,6 +4,8 @@ import { LogOut } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
+import { useState } from "react";
 
 const logo = `
 ████████╗███╗   ███╗██████╗ ██╗      ██████╗  ██████╗██╗  ██╗██████╗ 
@@ -30,13 +32,30 @@ export const Navbar = () => {
         </div>
       )}
       <div className="flex-1 flex justify-end gap-2 items-center">
-        {isDashboard && (
-          <Button>
-            <LogOut />
-          </Button>
-        )}
+        {isDashboard && <SignoutButton />}
         <ModeToggle />
       </div>
     </nav>
+  );
+};
+
+export const SignoutButton = () => {
+  const { signOut } = useClerk();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  async function handleSignout() {
+    try {
+      setIsLoading(true);
+      await signOut();
+    } catch (error) {
+      console.log("Error in handleSignout", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  return (
+    <Button size="sm" onClick={handleSignout} disabled={isLoading}>
+      <LogOut />
+    </Button>
   );
 };
