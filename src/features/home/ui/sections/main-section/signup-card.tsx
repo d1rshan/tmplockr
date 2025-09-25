@@ -41,7 +41,7 @@ const signupFormSchema = z
     error: "PINS DO NOT MATCH",
   });
 
-export const SignupCard = () => {
+export function SignupCard() {
   const router = useRouter();
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -159,4 +159,4 @@ export const SignupCard = () => {
       </CardContent>
     </Card>
   );
-};
+}

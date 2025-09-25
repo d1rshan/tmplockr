@@ -1,13 +1,17 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher(["/"]);
+const isPublicRoute = createRouteMatcher(["/", "/api/webhooks/(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
 
   const isPublic = isPublicRoute(req);
   const url = req.nextUrl.clone();
+
+  if (url.pathname === "/api/webhooks/clerk") {
+    return NextResponse.next();
+  }
 
   // If user is not signed in and trying to access a private route
   if (!userId && !isPublic) {

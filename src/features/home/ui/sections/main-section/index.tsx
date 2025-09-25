@@ -2,7 +2,7 @@ import { LoginCard } from "./login-card";
 import { RecieveCard } from "./recieve-card";
 import { SignupCard } from "./signup-card";
 
-export const MainSection = () => {
+export function MainSection() {
   return (
     <>
       <div className="hidden mt-10 mb-20 px-4 sm:grid gap-4 grid-cols-2">
@@ -17,4 +17,4 @@ export const MainSection = () => {
       </div>
     </>
   );
-};
+}

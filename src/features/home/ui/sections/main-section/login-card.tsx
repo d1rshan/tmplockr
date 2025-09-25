@@ -35,7 +35,7 @@ const loginFormSchema = z.object({
     .length(4, { error: "PIN MUST BE 4 DIGITS" }),
 });
 
-export const LoginCard = () => {
+export function LoginCard() {
   const router = useRouter();
   const { isLoaded, signIn, setActive } = useSignIn();
 
@@ -134,4 +134,4 @@ export const LoginCard = () => {
       </CardContent>
     </Card>
   );
-};
+}

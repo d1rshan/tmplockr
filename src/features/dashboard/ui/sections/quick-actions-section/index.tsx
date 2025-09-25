@@ -8,16 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
+
 import { useRef, useState } from "react";
+import { CreateNoteCard } from "./create-note-card";
 
 export const QuickActionsSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,29 +76,7 @@ export const QuickActionsSection = () => {
           </CardContent>
         </Card>
 
-        <Card className="sm:row-span-3 sm:col-span-3">
-          <CardHeader>
-            <CardTitle>CREATE NOTE</CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <form>
-              <div className="grid gap-4 h-full">
-                <div className="grid gap-2">
-                  <Label htmlFor="code">TITLE</Label>
-                  <Input type="text" />
-                </div>
-                <div className="grid gap-2 h-full">
-                  <Label htmlFor="password">CONTENT</Label>
-                  <Textarea className="resize-none h-50" />
-                </div>
-                <Button asChild className="w-full gap-2" type="submit">
-                  <Link href="/dashboard">SUBMIT</Link>
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        <CreateNoteCard />
 
         <Card className="sm:col-span-4">
           <CardHeader>

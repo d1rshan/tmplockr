@@ -6,7 +6,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-export const RecieveCard = () => {
+export function RecieveCard() {
   return (
     <Card>
       <CardHeader separator>
@@ -29,4 +29,4 @@ export const RecieveCard = () => {
       </CardContent>
     </Card>
   );
-};
+}
