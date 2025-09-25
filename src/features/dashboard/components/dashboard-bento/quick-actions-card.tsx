@@ -60,7 +60,7 @@ export const QuickActionsCard = () => {
           <CardContent>
             <div className="grid grid-cols-1 gap-4">
               <div
-                className="h-20 border-2 border-dashed active:bg-border/30 dark:active:bg-border/50  hover:bg-border/30 dark:hover:bg-border/50 rounded-md flex justify-center items-center cursor-pointer  bg-[#ECEEF0] dark:bg-[#1E1E24] subtle-stripes"
+                className="h-20 border-2 border-dashed active:bg-border/30  hover:bg-border/30 rounded-md flex justify-center items-center cursor-pointer  subtle-stripes"
                 onClick={handleClick}
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}

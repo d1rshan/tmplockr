@@ -19,7 +19,7 @@ export const Navbar = () => {
 
   const isDashboard = pathname === `/dashboard`;
   return (
-    <nav className="z-10 fixed top-0 left-0 w-full bg-[#ECEEF0]/65 dark:bg-[#1E1E24]/65 backdrop-blur-md flex items-center justify-between p-2 border-b-[0.5px]">
+    <nav className="z-10 fixed top-0 left-0 w-full bg-background/40 backdrop-blur-md flex items-center justify-between p-2 border-b-[0.5px]">
       <div className="flex-1"></div>
 
       {isDashboard && (

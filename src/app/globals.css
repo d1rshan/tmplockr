@@ -60,7 +60,8 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #BCC1CE;
+  /* --border: #BCC1CE; */
+  --border: var(--color-neutral-400);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -80,7 +81,6 @@
 
 .dark {
   --background: #121212;
-  /* --background: oklch(0.145 0 0); */
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -95,7 +95,8 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #45475A;
+  /* --border: #45475A; */
+  --border: var(--color-neutral-500);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
@@ -126,3 +127,54 @@
 .ascii-art{
   line-height: 1;
 }
+
+.subtle-stripes {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  @apply bg-border/10 hover:bg-border/20
+}
+
+.subtle-stripes::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-border) 0px,
+    var(--color-border) 1.5px,
+    transparent 1.5px,
+    transparent 4px
+  );
+  opacity: 0.2;
+  z-index: -10;
+}
+
+
+
+.subtle-headings{
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  @apply bg-border/20
+}
+
+.subtle-headings::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-border) 0px,
+    var(--color-border) 1.5px,
+    transparent 1.5px,
+    transparent 4px
+  );
+  opacity: 0.2;
+  z-index: -10;
+}
+
