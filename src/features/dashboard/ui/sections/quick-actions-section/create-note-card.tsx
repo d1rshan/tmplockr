@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Loader2 } from "lucide-react";
 import { createNoteSchema } from "@/features/dashboard/schemas";
+import { createNote } from "@/features/dashboard/actions/notes";
+import { toast } from "sonner";
 
 export function CreateNoteCard() {
   const form = useForm<z.infer<typeof createNoteSchema>>({
@@ -26,8 +28,13 @@ export function CreateNoteCard() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof createNoteSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof createNoteSchema>) {
+    const res = await createNote(values);
+    if (res.success) {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
   }
 
   return (

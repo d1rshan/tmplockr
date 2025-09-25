@@ -1,9 +1,12 @@
+"use server";
+
 import { ActionResponse } from "@/types";
 import { createNoteSchema } from "../schemas";
 import z from "zod";
 import { db } from "@/lib/db";
 import { notesTable } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
+import { revalidateTag } from "next/cache";
 
 export async function createNote(
   unsafeData: z.infer<typeof createNoteSchema>
@@ -26,6 +29,7 @@ export async function createNote(
       userId,
     });
 
+    // revalidateTag("notes");
     return { success: true, message: "NOTE CREATED" };
   } catch (error) {
     console.log("[CREATE_NOTE]", error);
