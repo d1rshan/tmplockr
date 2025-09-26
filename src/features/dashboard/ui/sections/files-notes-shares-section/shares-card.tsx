@@ -6,7 +6,7 @@ export function SharesCard() {
       <CardHeader>
         <CardTitle>SHARES</CardTitle>
       </CardHeader>
-      <CardContent>he</CardContent>
+      <CardContent>BUILDING...</CardContent>
     </Card>
   );
 }

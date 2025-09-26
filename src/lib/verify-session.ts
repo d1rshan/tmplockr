@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 
-export const verifySessionRedirect = cache(async () => {
+export const verifySession = cache(async () => {
   const { userId } = await auth();
 
   if (!userId) {

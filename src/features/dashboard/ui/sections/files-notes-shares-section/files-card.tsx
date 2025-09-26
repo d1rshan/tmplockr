@@ -6,25 +6,53 @@ import { File } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 import { Download, Link2, Trash } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import { deleteFile } from "@/features/dashboard/actions/files";
 
 export function FilesCard({ files }: { files: File[] }) {
-  const [deletingFileId, setDeletingFileId] = useState("");
+  const [deletingFileIds, setDeletingFileIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [isPending, startTransition] = useTransition(); // React 18 transition
 
-  // TODO: consider using useTransition hook
   async function handleDelete(fileId: string, imagekitId: string) {
-    setDeletingFileId(fileId);
-    const res = await deleteFile(fileId, imagekitId);
-    if (res.success) {
-      toast.success("FILE DELETED");
-    } else {
+    // Add file to deleting set immediately for instant UI feedback
+    setDeletingFileIds((prev) => new Set(prev).add(fileId));
+
+    try {
+      const res = await deleteFile(fileId, imagekitId);
+
+      if (res.success) {
+        toast.success("FILE DELETED");
+
+        // Non-urgent removal from deleting set so UI stays responsive
+        startTransition(() => {
+          setDeletingFileIds((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(fileId);
+            return newSet;
+          });
+        });
+      } else {
+        toast.error("FAILED TO DELETE FILE");
+        setDeletingFileIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(fileId);
+          return newSet;
+        });
+      }
+    } catch (err) {
       toast.error("FAILED TO DELETE FILE");
+      setDeletingFileIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
     }
-    setDeletingFileId("");
   }
+
   return (
     <Card>
       <CardHeader>
@@ -36,7 +64,7 @@ export function FilesCard({ files }: { files: File[] }) {
             key={file.id}
             className={cn(
               "flex justify-between items-center",
-              deletingFileId === file.id && "opacity-40"
+              deletingFileIds.has(file.id!) && "opacity-40"
             )}
           >
             <span>{file.name}</span>
@@ -64,7 +92,7 @@ export function FilesCard({ files }: { files: File[] }) {
                 variant="custom"
                 size="icon"
                 onClick={() => handleDelete(file.id!, file.imagekitId)}
-                disabled={deletingFileId === file.id}
+                disabled={deletingFileIds.has(file.id!)}
               >
                 <Trash className="size-3.5 text-destructive" />
               </Button>

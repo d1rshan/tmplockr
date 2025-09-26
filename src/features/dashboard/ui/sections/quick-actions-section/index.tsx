@@ -13,8 +13,13 @@ import {
 } from "@/components/ui/input-otp";
 import { CreateNoteCard } from "./create-note-card";
 import { UploadFilesCard } from "./upload-files-card";
+import { verifySession } from "@/lib/verify-session";
+import { getUsageDetails } from "@/features/dashboard/data";
 
-export const QuickActionsSection = () => {
+export async function QuickActionsSection() {
+  const userId = await verifySession();
+  const { notesUsed } = await getUsageDetails(userId);
+
   return (
     <Card>
       <CardHeader separator>
@@ -22,7 +27,7 @@ export const QuickActionsSection = () => {
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-7 gap-4">
         <UploadFilesCard />
-        <CreateNoteCard />
+        <CreateNoteCard notesUsed={notesUsed} />
 
         <Card className="sm:col-span-4">
           <CardHeader>
@@ -31,8 +36,12 @@ export const QuickActionsSection = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <Button className="w-full">SELECT</Button>
-              <Button className="w-full">SHARE</Button>
+              <Button className="w-full" disabled>
+                SELECT
+              </Button>
+              <Button className="w-full" disabled>
+                SHARE
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -51,7 +60,9 @@ export const QuickActionsSection = () => {
                     <InputOTPSlot index={3} />
                   </InputOTPGroup>
                 </InputOTP>
-                <Button type="submit">RECIEVE</Button>
+                <Button type="submit" disabled>
+                  RECIEVE
+                </Button>
               </div>
             </form>
           </CardContent>
@@ -59,4 +70,4 @@ export const QuickActionsSection = () => {
       </CardContent>
     </Card>
   );
-};
+}

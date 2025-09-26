@@ -50,12 +50,12 @@ export function UploadProvider({ children }: { children: ReactNode }) {
     setProgress(0);
 
     let progress = 0;
-    const progressIncrement = 1; // % to increment per tick
-    const intervalMs = 100; // interval duration in ms
+    const progressIncrement = 3; // % to increment per tick
+    const intervalMs = 150; // interval duration in ms
 
     // Start interval to simulate progress
     const progressTimer = setInterval(() => {
-      progress = Math.min(progress + progressIncrement, 99); // cap at 99% until done
+      progress = Math.min(progress + progressIncrement, 69); // cap at 99% until done
       setProgress(progress);
     }, intervalMs);
 
@@ -106,7 +106,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
 
       const res = await saveFilesToDB(successfulResults);
       if (res.success) {
-        toast.success("SAVED FILES TO DB");
+        toast.success("ALL FILES UPLOADED");
       } else {
         toast.error("FAILED TO SAVE FILES TO DB");
       }

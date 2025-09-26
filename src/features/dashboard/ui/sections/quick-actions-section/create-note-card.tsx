@@ -19,7 +19,7 @@ import { noteSchema } from "@/features/dashboard/schemas";
 import { createNote } from "@/features/dashboard/actions/notes";
 import { toast } from "sonner";
 
-export function CreateNoteCard() {
+export function CreateNoteCard({ notesUsed }: { notesUsed: number }) {
   const form = useForm<z.infer<typeof noteSchema>>({
     resolver: zodResolver(noteSchema),
     defaultValues: {
@@ -74,7 +74,7 @@ export function CreateNoteCard() {
             <Button
               className="w-full"
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting || notesUsed === 10}
             >
               {form.formState.isSubmitting ? (
                 <Loader2 className="animate-spin" />

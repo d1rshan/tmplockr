@@ -43,6 +43,5 @@ export async function getUsageDetails(userId: string) {
     .from(usersTable)
     .where(eq(usersTable.id, userId));
 
-  console.log("HIT");
   return usage_details;
 }

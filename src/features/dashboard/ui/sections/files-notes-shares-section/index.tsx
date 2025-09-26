@@ -3,10 +3,10 @@ import { getFiles, getNotes, getUsageDetails } from "@/features/dashboard/data";
 import { FilesCard } from "./files-card";
 import { NotesCard } from "./notes-card";
 import { SharesCard } from "./shares-card";
-import { verifySessionRedirect } from "@/lib/auth-checks";
+import { verifySession } from "@/lib/verify-session";
 
 export async function FilesNotesSharesSection() {
-  const userId = await verifySessionRedirect();
+  const userId = await verifySession();
 
   const notes = await getNotes(userId);
   const files = await getFiles(userId);

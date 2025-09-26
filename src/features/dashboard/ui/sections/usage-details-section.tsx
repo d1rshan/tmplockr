@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { verifySessionRedirect } from "@/lib/auth-checks";
+import { verifySession } from "@/lib/verify-session";
 import { getUsageDetails } from "../../data";
 import { toMB } from "@/lib/utils";
 
 export async function UsageDetailsSection() {
-  const userId = await verifySessionRedirect();
+  const userId = await verifySession();
   const { storageUsed, notesUsed } = await getUsageDetails(userId);
 
   return (
