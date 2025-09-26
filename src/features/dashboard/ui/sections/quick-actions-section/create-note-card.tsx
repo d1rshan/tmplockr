@@ -15,25 +15,25 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Loader2 } from "lucide-react";
-import { createNoteSchema } from "@/features/dashboard/schemas";
+import { noteSchema } from "@/features/dashboard/schemas";
 import { createNote } from "@/features/dashboard/actions/notes";
 import { toast } from "sonner";
 
 export function CreateNoteCard() {
-  const form = useForm<z.infer<typeof createNoteSchema>>({
-    resolver: zodResolver(createNoteSchema),
+  const form = useForm<z.infer<typeof noteSchema>>({
+    resolver: zodResolver(noteSchema),
     defaultValues: {
       title: "",
       content: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof createNoteSchema>) {
+  async function onSubmit(values: z.infer<typeof noteSchema>) {
     const res = await createNote(values);
     if (res.success) {
-      toast.success(res.message);
+      toast.success("NOTE CREATED");
     } else {
-      toast.error(res.message);
+      toast.error("FAILED TO CREATE NOTE");
     }
     form.reset();
   }

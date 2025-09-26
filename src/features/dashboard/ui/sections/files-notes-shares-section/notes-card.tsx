@@ -16,9 +16,9 @@ export function NotesCard({ notes }: { notes: Note[] }) {
     setDeletingNoteId(noteId);
     const res = await deleteNote(noteId);
     if (res.success) {
-      toast.success(res.message);
+      toast.success("NOTE DELETED");
     } else {
-      toast.error(res.message);
+      toast.error("FAILED TO DELETE NOTE");
     }
     setDeletingNoteId("");
   }

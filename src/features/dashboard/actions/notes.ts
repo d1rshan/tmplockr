@@ -1,7 +1,7 @@
 "use server";
 
 import { ActionResponse } from "@/types";
-import { createNoteSchema } from "../schemas";
+import { noteSchema } from "../schemas";
 import z from "zod";
 import { db } from "@/lib/db";
 import { notesTable, usersTable } from "@/lib/db/schema";
@@ -12,7 +12,7 @@ import { auth } from "@clerk/nextjs/server";
 import { APP_LIMITS } from "@/lib/consts";
 
 export async function createNote(
-  unsafeData: z.infer<typeof createNoteSchema>
+  unsafeData: z.infer<typeof noteSchema>
 ): ActionResponse {
   try {
     const { userId } = await auth();
@@ -21,10 +21,10 @@ export async function createNote(
       return { success: false, message: "UNAUTHORIZED" };
     }
 
-    const { success, data } = createNoteSchema.safeParse(unsafeData);
+    const { success, data } = noteSchema.safeParse(unsafeData);
 
     if (!success) {
-      return { success: false, message: "FAILED TO CREATE NOTE" };
+      return { success: false, message: "VALIDATION_FAILED" };
     }
 
     const [{ notesUsed }] = await db
@@ -34,7 +34,7 @@ export async function createNote(
       .limit(1);
 
     if (notesUsed + 1 > APP_LIMITS.NOTES) {
-      return { success: false, message: "LIMIT EXCEEDED" };
+      return { success: false, message: "USAGE_LIMIT_EXCEEDED" };
     }
 
     await db.insert(notesTable).values({
@@ -49,10 +49,10 @@ export async function createNote(
     revalidateTag(CACHE_TAGS.notes(userId));
     revalidateTag(CACHE_TAGS.usage_details(userId));
 
-    return { success: true, message: "NOTE CREATED" };
+    return { success: true };
   } catch (error) {
     console.log("[CREATE_NOTE]", error);
-    return { success: false, message: "INTERNAL ERROR" };
+    return { success: false, message: "INTERNAL_ERROR" };
   }
 }
 
@@ -78,9 +78,9 @@ export async function deleteNote(noteId: string): ActionResponse {
     revalidateTag(CACHE_TAGS.notes(userId));
     revalidateTag(CACHE_TAGS.usage_details(userId));
 
-    return { success: true, message: "NOTE DELETED" };
+    return { success: true };
   } catch (error) {
     console.log("[DELETE_NOTE]", error);
-    return { success: false, message: "INTERNAL ERROR" };
+    return { success: false, message: "INTERNAL_ERROR" };
   }
 }
