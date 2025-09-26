@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { verifySession } from "@/lib/verify-session";
 import { getUsageDetails } from "../../data";
 import { toMB } from "@/lib/utils";
+import { APP_LIMITS } from "@/lib/consts";
 
 export async function UsageDetailsSection() {
   const userId = await verifySession();
@@ -15,32 +16,23 @@ export async function UsageDetailsSection() {
       <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="gap-2">
           <CardHeader>
-            <CardTitle className="flex justify-between">
-              <span>USED STORAGE</span>
-              <span className="sm:hidden font-normal">
-                {toMB(storageUsed)}/100 MB
-              </span>
-            </CardTitle>
+            <CardTitle>USED STORAGE</CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">
-            {toMB(storageUsed)}/100 MB
+          <CardContent>
+            {toMB(storageUsed)}/{APP_LIMITS.STORAGE / (1024 * 1024)} MB
           </CardContent>
         </Card>
         <Card className="gap-2">
           <CardHeader>
-            <CardTitle className="flex justify-between">
-              <span>NOTES CREATED</span>
-              <span className="sm:hidden">{notesUsed}/10</span>
-            </CardTitle>
+            <CardTitle>NOTES CREATED</CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">{notesUsed}/10</CardContent>
+          <CardContent>
+            {notesUsed}/{APP_LIMITS.NOTES}
+          </CardContent>
         </Card>
         <Card className="gap-2">
           <CardHeader>
-            <CardTitle className="flex justify-between">
-              <span>ACTIVE SHARES</span>
-              <span className="sm:hidden">?/5</span>
-            </CardTitle>
+            <CardTitle>ACTIVE SHARES</CardTitle>
           </CardHeader>
           <CardContent className="hidden sm:block">?/5</CardContent>
         </Card>
