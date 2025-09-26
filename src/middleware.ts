@@ -9,10 +9,6 @@ export default clerkMiddleware(async (auth, req) => {
   const isPublic = isPublicRoute(req);
   const url = req.nextUrl.clone();
 
-  if (url.pathname === "/api/webhooks/clerk") {
-    return NextResponse.next();
-  }
-
   // If user is not signed in and trying to access a private route
   if (!userId && !isPublic) {
     url.pathname = "/";

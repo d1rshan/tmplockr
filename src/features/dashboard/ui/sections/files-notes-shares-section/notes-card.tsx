@@ -1,8 +1,10 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteNote } from "@/features/dashboard/actions/notes";
 import { Note } from "@/lib/db/schema";
+import { cn } from "@/lib/utils";
 import { Copy, Trash } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,7 +29,13 @@ export function NotesCard({ notes }: { notes: Note[] }) {
       </CardHeader>
       <CardContent className="uppercase flex flex-col gap-1 h-30 overflow-y-scroll scrollbar-hide ">
         {notes.map((note) => (
-          <div key={note.id} className="flex justify-between items-center">
+          <div
+            key={note.id}
+            className={cn(
+              "flex justify-between items-center",
+              deletingNoteId === note.id && "opacity-40"
+            )}
+          >
             <span>{note.title}</span>
             <div className="flex gap-3 items-center justify-center">
               <Button

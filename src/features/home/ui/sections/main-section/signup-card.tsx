@@ -74,7 +74,7 @@ export function SignupCard() {
         router.push("/dashboard");
       }
     } catch (error) {
-      const e = error as { errors: { message: string }[] };
+      // const e = error as { errors: { message: string }[] };
       toast.error("FAILED TO SIGN UP!");
       console.log("Error signing up", JSON.stringify(error, null, 2));
     }

@@ -1,22 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { getNotes } from "@/features/dashboard/db/notes";
+import { getNotes, getUsageDetails } from "@/features/dashboard/data";
 import { FilesCard } from "./files-card";
 import { NotesCard } from "./notes-card";
 import { SharesCard } from "./shares-card";
+import { verifySessionRedirect } from "@/lib/auth-checks";
 
 export async function FilesNotesSharesSection() {
-  const { userId } = await auth();
+  const userId = await verifySessionRedirect();
 
-  if (!userId) return redirect("/");
+  const { notesUsed } = await getUsageDetails(userId);
 
   const notes = await getNotes(userId);
 
   return (
     <Card className="mb-4">
       <CardHeader separator>
-        <CardTitle>YOUR FILES, NOTES & SHARES</CardTitle>
+        <CardTitle>YOUR FILES, NOTES & SHARES {notesUsed}</CardTitle>
       </CardHeader>
       {/* <CardContent>
         {notes.map((note: { title: string; content: string; id: string }) => (

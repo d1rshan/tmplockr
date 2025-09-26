@@ -4,11 +4,12 @@ import { ActionResponse } from "@/types";
 import { createNoteSchema } from "../schemas";
 import z from "zod";
 import { db } from "@/lib/db";
-import { notesTable } from "@/lib/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { notesTable, usersTable } from "@/lib/db/schema";
 import { revalidateTag } from "next/cache";
-import { cacheTags } from "@/lib/cache-tags";
-import { and, eq } from "drizzle-orm";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { and, eq, sql } from "drizzle-orm";
+import { auth } from "@clerk/nextjs/server";
+import { APP_LIMITS } from "@/lib/consts";
 
 export async function createNote(
   unsafeData: z.infer<typeof createNoteSchema>
@@ -26,12 +27,28 @@ export async function createNote(
       return { success: false, message: "FAILED TO CREATE NOTE" };
     }
 
+    const [{ notesUsed }] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1);
+
+    if (notesUsed + 1 > APP_LIMITS.NOTES) {
+      return { success: false, message: "LIMIT EXCEEDED" };
+    }
+
     await db.insert(notesTable).values({
       ...data,
       userId,
     });
 
-    revalidateTag(cacheTags.notes);
+    await db.update(usersTable).set({
+      notesUsed: notesUsed + 1,
+    });
+
+    revalidateTag(CACHE_TAGS.notes(userId));
+    revalidateTag(CACHE_TAGS.usage_details(userId));
+
     return { success: true, message: "NOTE CREATED" };
   } catch (error) {
     console.log("[CREATE_NOTE]", error);
@@ -51,7 +68,15 @@ export async function deleteNote(noteId: string): ActionResponse {
       .delete(notesTable)
       .where(and(eq(notesTable.userId, userId), eq(notesTable.id, noteId)));
 
-    revalidateTag(cacheTags.notes);
+    await db
+      .update(usersTable)
+      .set({
+        notesUsed: sql`GREATEST(${usersTable.notesUsed} - 1, 0)`,
+      })
+      .where(eq(usersTable.id, userId));
+
+    revalidateTag(CACHE_TAGS.notes(userId));
+    revalidateTag(CACHE_TAGS.usage_details(userId));
 
     return { success: true, message: "NOTE DELETED" };
   } catch (error) {

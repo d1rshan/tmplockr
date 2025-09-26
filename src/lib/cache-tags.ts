@@ -1,3 +1,4 @@
-export const cacheTags = {
-  notes: "notes" as const,
+export const CACHE_TAGS = {
+  usage_details: (userId: string) => `${userId}-usage_details` as const,
+  notes: (userId: string) => `${userId}-notes` as const,
 };

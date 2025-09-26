@@ -15,7 +15,6 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { Input } from "./input";
 
 const Form = FormProvider;
 
@@ -157,52 +156,52 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-function PinFormField({
-  control,
-  name,
-  label,
-}: {
-  control: any;
-  name: string;
-  label: string;
-}) {
-  const maskChars = ["$", "#", "@", "%"];
+// function PinFormField({
+//   control,
+//   name,
+//   label,
+// }: {
+//   control: any;
+//   name: string;
+//   label: string;
+// }) {
+//   const maskChars = ["$", "#", "@", "%"];
 
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => {
-        const maskedValue = field.value
-          ? field.value
-              .split("")
-              .map((_: any, i: any) => maskChars[i % maskChars.length]) // Use a deterministic mask
-              .join("")
-          : "";
+//   return (
+//     <FormField
+//       control={control}
+//       name={name}
+//       render={({ field }) => {
+//         const maskedValue = field.value
+//           ? field.value
+//               .split("")
+//               .map((_: any, i: any) => maskChars[i % maskChars.length]) // Use a deterministic mask
+//               .join("")
+//           : "";
 
-        return (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input
-                pin
-                placeholder=""
-                // IMPORTANT: Bind the value to the actual form field value, not a local state
-                value={maskedValue}
-                onChange={(e) => {
-                  const val = e.target.value.slice(0, 4);
-                  field.onChange(val); // This is what updates the form state
-                }}
-                inputMode="numeric"
-                maxLength={4}
-              />
-            </FormControl>
-          </FormItem>
-        );
-      }}
-    />
-  );
-}
+//         return (
+//           <FormItem>
+//             <FormLabel>{label}</FormLabel>
+//             <FormControl>
+//               <Input
+//                 pin
+//                 placeholder=""
+//                 // IMPORTANT: Bind the value to the actual form field value, not a local state
+//                 value={maskedValue}
+//                 onChange={(e) => {
+//                   const val = e.target.value.slice(0, 4);
+//                   field.onChange(val); // This is what updates the form state
+//                 }}
+//                 inputMode="numeric"
+//                 maxLength={4}
+//               />
+//             </FormControl>
+//           </FormItem>
+//         );
+//       }}
+//     />
+//   );
+// }
 
 export {
   useFormField,
@@ -213,5 +212,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-  PinFormField,
 };

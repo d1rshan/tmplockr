@@ -1,6 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { verifySessionRedirect } from "@/lib/auth-checks";
+import { getUsageDetails } from "../../data";
+import { toMB } from "@/lib/utils";
 
-export const UsageDetailsSection = () => {
+export async function UsageDetailsSection() {
+  const userId = await verifySessionRedirect();
+  const { storageUsed, notesUsed } = await getUsageDetails(userId);
+
   return (
     <Card>
       <CardHeader separator>
@@ -11,30 +17,34 @@ export const UsageDetailsSection = () => {
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>USED STORAGE</span>
-              <span className="sm:hidden font-normal">20/100 MB</span>
+              <span className="sm:hidden font-normal">
+                {toMB(storageUsed)}/100 MB
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">20/100 MB</CardContent>
+          <CardContent className="hidden sm:block">
+            {toMB(storageUsed)}/100 MB
+          </CardContent>
         </Card>
         <Card className="gap-2">
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>NOTES CREATED</span>
-              <span className="sm:hidden">2/10</span>
+              <span className="sm:hidden">{notesUsed}/10</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">2/10</CardContent>
+          <CardContent className="hidden sm:block">{notesUsed}/10</CardContent>
         </Card>
         <Card className="gap-2">
           <CardHeader>
             <CardTitle className="flex justify-between">
               <span>ACTIVE SHARES</span>
-              <span className="sm:hidden">2/5</span>
+              <span className="sm:hidden">?/5</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">2/5</CardContent>
+          <CardContent className="hidden sm:block">?/5</CardContent>
         </Card>
       </CardContent>
     </Card>
   );
-};
+}
