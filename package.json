@@ -21,6 +21,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.23.16",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.544.0",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

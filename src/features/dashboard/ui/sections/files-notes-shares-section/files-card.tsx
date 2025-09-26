@@ -5,14 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteNote } from "@/features/dashboard/actions/notes";
 import { File } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { Copy, Trash } from "lucide-react";
+import { Download, Link2, Trash } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import { saveAs } from "file-saver";
 import { toast } from "sonner";
 
 export function FilesCard({ files }: { files: File[] }) {
   const [deletingFileId, setDeletingFileId] = useState("");
 
-  async function handleDelete(fileId: string) {
+  // TODO: look at useTransition hook
+  async function handleDelete(fileId: string, imagekitId: string) {
     setDeletingFileId(fileId);
     const res = await deleteNote(fileId);
     if (res.success) {
@@ -27,7 +30,7 @@ export function FilesCard({ files }: { files: File[] }) {
       <CardHeader>
         <CardTitle>FILES</CardTitle>
       </CardHeader>
-      <CardContent className="uppercase flex flex-col gap-1 h-30 overflow-y-scroll scrollbar-hide ">
+      <CardContent className="uppercase flex flex-col gap-2 h-40 overflow-y-scroll scrollbar-hide ">
         {files.map((file) => (
           <div
             key={file.id}
@@ -38,16 +41,32 @@ export function FilesCard({ files }: { files: File[] }) {
           >
             <span>{file.name}</span>
             <div className="flex gap-3 items-center justify-center">
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href={file.imagekitUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Link2 className="size-3.5" />
+                </Link>
+              </Button>
               <Button
-                size={"icon"}
-                onClick={() => handleDelete(file.id!)}
-                variant={"custom"}
+                variant="custom"
+                size="icon"
+                onClick={() => {
+                  saveAs(file.imagekitUrl, file.name);
+                }}
+              >
+                <Download className="size-3.5" />
+              </Button>
+
+              <Button
+                variant="custom"
+                size="icon"
+                onClick={() => handleDelete(file.id!, file.imagekitId)}
                 disabled={deletingFileId === file.id}
               >
                 <Trash className="size-3.5 text-destructive" />
-              </Button>
-              <Button size={"icon"} variant={"custom"}>
-                <Copy className="size-3.5" />
               </Button>
             </div>
           </div>
