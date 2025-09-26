@@ -39,7 +39,9 @@ function Component() {
       <CardHeader>
         <CardTitle>UPLOAD FILES</CardTitle>
         <CardDescription>
-          {acceptedFiles.length} FILES SELECTED, {totalSize} MB TOTAL
+          {isUploading
+            ? "UPLOADING..."
+            : `${acceptedFiles.length} FILES SELECTED, ${totalSize} MB TOTAL`}
         </CardDescription>
         <CardAction className="flex gap-2">
           {/* only show "add more" if files already exist */}
