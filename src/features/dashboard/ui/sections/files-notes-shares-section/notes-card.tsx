@@ -38,6 +38,9 @@ export function NotesCard({ notes }: { notes: Note[] }) {
           >
             <span>{note.title}</span>
             <div className="flex gap-3 items-center justify-center">
+              <Button size={"icon"} variant={"custom"}>
+                <Copy className="size-3.5" />
+              </Button>
               <Button
                 size={"icon"}
                 onClick={() => handleDelete(note.id)}
@@ -45,9 +48,6 @@ export function NotesCard({ notes }: { notes: Note[] }) {
                 disabled={deletingNoteId === note.id}
               >
                 <Trash className="size-3.5 text-destructive" />
-              </Button>
-              <Button size={"icon"} variant={"custom"}>
-                <Copy className="size-3.5" />
               </Button>
             </div>
           </div>

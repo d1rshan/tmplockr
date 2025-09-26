@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { deleteNote } from "@/features/dashboard/actions/notes";
 import { File } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 import { Download, Link2, Trash } from "lucide-react";
@@ -10,14 +9,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
+import { deleteFile } from "@/features/dashboard/actions/files";
 
 export function FilesCard({ files }: { files: File[] }) {
   const [deletingFileId, setDeletingFileId] = useState("");
 
-  // TODO: look at useTransition hook
+  // TODO: consider using useTransition hook
   async function handleDelete(fileId: string, imagekitId: string) {
     setDeletingFileId(fileId);
-    const res = await deleteNote(fileId);
+    const res = await deleteFile(fileId, imagekitId);
     if (res.success) {
       toast.success("FILE DELETED");
     } else {

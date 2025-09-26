@@ -8,15 +8,13 @@ import { verifySessionRedirect } from "@/lib/auth-checks";
 export async function FilesNotesSharesSection() {
   const userId = await verifySessionRedirect();
 
-  const { notesUsed } = await getUsageDetails(userId);
-
   const notes = await getNotes(userId);
-
   const files = await getFiles(userId);
+
   return (
     <Card className="mb-4">
       <CardHeader separator>
-        <CardTitle>YOUR FILES, NOTES & SHARES {notesUsed}</CardTitle>
+        <CardTitle>YOUR FILES, NOTES & SHARES</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FilesCard files={files} />
