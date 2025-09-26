@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
@@ -24,6 +23,7 @@ function CardHeader({
     <div
       data-slot="card-header"
       className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         "relative px-4",
         separator
           ? "border-b min-h-10 flex items-center font-semibold subtle-headings"
@@ -49,18 +49,18 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-// function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-//   return (
-//     <div
-//       data-slot="card-action"
-//       className={cn(
-//         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-//         className
-//       )}
-//       {...props}
-//     />
-//   );
-// }
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -87,7 +87,7 @@ export {
   CardHeader,
   CardFooter,
   CardTitle,
-  // CardAction,
+  CardAction,
   CardDescription,
   CardContent,
 };

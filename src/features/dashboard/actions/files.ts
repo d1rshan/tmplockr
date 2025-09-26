@@ -1,3 +1,5 @@
+"use server";
+
 import { ActionResponse } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 import z from "zod";
