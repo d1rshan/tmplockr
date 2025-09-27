@@ -17,7 +17,7 @@ export async function FilesNotesSharesSection() {
       <CardHeader separator>
         <CardTitle>YOUR FILES, NOTES & SHARES</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <CardContent className="grid grid-cols-1 gap-4">
         <FilesCard files={files} />
         <NotesCard notes={notes} />
         <SharesCard />

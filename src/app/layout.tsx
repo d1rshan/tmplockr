@@ -8,6 +8,8 @@ import { Navbar } from "@/components/navbar";
 import { GridBackground } from "@/components/grid-background";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
+import { logo } from "@/lib/consts";
 
 const geist_mono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -25,24 +27,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geist_mono.variable} font-mono relative antialiased`}
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
+      </head>
+      <body className={`${geist_mono.variable} font-mono relative antialiased`}>
+        <ThemeProvider
+          attribute={"class"}
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
-          <ThemeProvider
-            attribute={"class"}
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
+          <Suspense
+            fallback={
+              <div className="min-h-screen w-full flex justify-center items-center">
+                <GridBackground />
+                <pre className="ascii-art animate-pulse text-[6px] sm:text-xs lg:text-sm whitespace-pre-wrap text-center">
+                  {logo}
+                </pre>
+              </div>
+            }
           >
-            <Navbar />
             <GridBackground />
-            {children}
-            <Toaster closeButton />
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+            <ClerkProvider>
+              <Navbar />
+              {children}
+            </ClerkProvider>
+            <Toaster />
+          </Suspense>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

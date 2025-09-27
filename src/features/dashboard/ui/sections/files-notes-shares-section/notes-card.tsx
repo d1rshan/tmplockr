@@ -23,11 +23,11 @@ export function NotesCard({ notes }: { notes: Note[] }) {
     setDeletingNoteId("");
   }
   return (
-    <Card>
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle>NOTES</CardTitle>
       </CardHeader>
-      <CardContent className="uppercase flex flex-col gap-1 h-30 overflow-y-scroll scrollbar-hide ">
+      <CardContent className="uppercase flex flex-col gap-1 h-40 overflow-y-scroll scrollbar-hide ">
         {notes.map((note) => (
           <div
             key={note.id}

@@ -6,15 +6,7 @@ import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { useState } from "react";
 import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
-
-const logo = `
-████████╗███╗   ███╗██████╗ ██╗      ██████╗  ██████╗██╗  ██╗██████╗ 
-╚══██╔══╝████╗ ████║██╔══██╗██║     ██╔═══██╗██╔════╝██║ ██╔╝██╔══██╗
-   ██║   ██╔████╔██║██████╔╝██║     ██║   ██║██║     █████╔╝ ██████╔╝
-   ██║   ██║╚██╔╝██║██╔═══╝ ██║     ██║   ██║██║     ██╔═██╗ ██╔══██╗
-   ██║   ██║ ╚═╝ ██║██║     ███████╗╚██████╔╝╚██████╗██║  ██╗██║  ██║
-   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝
-  `;
+import { logo } from "@/lib/consts";
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -26,12 +18,12 @@ export const Navbar = () => {
 
       {isDashboard && (
         <div className="flex-1 flex justify-center items-center">
-          <pre className="ascii-art text-[3px] sm:text-[5px] select-none">
-            {logo}
+          <pre className="ascii-art text-[4px] sm:text-[5px] select-none">
+            <a href="/dashboard">{logo}</a>
           </pre>
         </div>
       )}
-      <div className="flex-1 flex justify-end gap-2 items-center">
+      <div className="flex-1 flex justify-end sm:gap-2 gap-0 items-center">
         {isDashboard && <SignoutButton />}
 
         <AnimatedThemeToggler />
@@ -40,7 +32,7 @@ export const Navbar = () => {
   );
 };
 
-export const SignoutButton = () => {
+const SignoutButton = () => {
   const { signOut } = useClerk();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

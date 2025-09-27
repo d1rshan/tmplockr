@@ -54,7 +54,7 @@ export function FilesCard({ files }: { files: File[] }) {
   }
 
   return (
-    <Card>
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle>FILES</CardTitle>
       </CardHeader>
