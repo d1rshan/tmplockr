@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFiles, getNotes, getUsageDetails } from "@/features/dashboard/data";
+import { getFiles, getNotes } from "@/features/dashboard/data";
 import { FilesCard } from "./files-card";
 import { NotesCard } from "./notes-card";
 import { SharesCard } from "./shares-card";
@@ -9,6 +9,7 @@ export async function FilesNotesSharesSection() {
   const userId = await verifySession();
 
   const notes = await getNotes(userId);
+
   const files = await getFiles(userId);
 
   return (

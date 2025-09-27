@@ -19,6 +19,7 @@ export async function getNotes(userId: string): Promise<Note[]> {
     .from(notesTable)
     .where(eq(notesTable.userId, userId));
 
+  console.log("GET NOTES HIT");
   return notes;
 }
 
@@ -31,6 +32,7 @@ export async function getFiles(userId: string): Promise<File[]> {
     .from(filesTable)
     .where(eq(filesTable.userId, userId));
 
+  console.log("GET FILES HIT");
   return files;
 }
 
@@ -43,5 +45,6 @@ export async function getUsageDetails(userId: string) {
     .from(usersTable)
     .where(eq(usersTable.id, userId));
 
+  console.log("GET USAGE DETAILS HIT");
   return usage_details;
 }
