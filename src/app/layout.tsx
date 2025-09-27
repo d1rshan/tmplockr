@@ -43,11 +43,11 @@ export default function RootLayout({
         >
           <Suspense
             fallback={
-              <div className="min-h-screen w-full flex justify-center items-center">
-                <GridBackground />
+              <div className="h-screen w-full flex justify-center items-center">
                 <pre className="ascii-art animate-pulse text-[6px] sm:text-xs lg:text-sm whitespace-pre-wrap text-center">
                   {logo}
                 </pre>
+                <GridBackground />
               </div>
             }
           >
