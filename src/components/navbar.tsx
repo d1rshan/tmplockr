@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { useState } from "react";
+import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 
 const logo = `
 ████████╗███╗   ███╗██████╗ ██╗      ██████╗  ██████╗██╗  ██╗██████╗ 
@@ -33,7 +34,8 @@ export const Navbar = () => {
       )}
       <div className="flex-1 flex justify-end gap-2 items-center">
         {isDashboard && <SignoutButton />}
-        <ModeToggle />
+
+        <AnimatedThemeToggler />
       </div>
     </nav>
   );

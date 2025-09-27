@@ -48,10 +48,9 @@ export function LoginCard() {
   } = form;
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    console.log(values);
-
     const { username, pin } = values;
 
+    console.log(pin + process.env.NEXT_PUBLIC_PASSWORD_SALT!);
     if (!isLoaded) return;
     try {
       const signInAttempt = await signIn.create({

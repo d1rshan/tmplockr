@@ -127,7 +127,6 @@
   line-height: 1;
 }
 
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
@@ -161,8 +160,6 @@
   z-index: -10;
 }
 
-
-
 .subtle-headings{
   position: relative;
   z-index: 1;
@@ -187,3 +184,7 @@
   z-index: -10;
 }
 
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
