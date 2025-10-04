@@ -12,7 +12,7 @@ import { useDropzone } from "react-dropzone";
 import { UploadProvider, useUpload } from "./use-upload";
 import { cn, toMB } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2, Plus, Upload, X } from "lucide-react";
+import { Check, Plus, Upload, X } from "lucide-react";
 import { useState } from "react";
 
 function Component() {
