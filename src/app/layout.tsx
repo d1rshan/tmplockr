@@ -7,7 +7,6 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { GridBackground } from "@/components/grid-background";
 import { Toaster } from "@/components/ui/sonner";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { logo } from "@/lib/consts";
 
@@ -52,10 +51,8 @@ export default function RootLayout({
             }
           >
             <GridBackground />
-            <ClerkProvider>
               <Navbar />
               {children}
-            </ClerkProvider>
             <Toaster />
           </Suspense>
         </ThemeProvider>

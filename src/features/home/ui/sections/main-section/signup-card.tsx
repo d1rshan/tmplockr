@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -43,7 +42,6 @@ const signupFormSchema = z
 
 export function SignupCard() {
   const router = useRouter();
-  const { isLoaded, signUp, setActive } = useSignUp();
 
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -62,17 +60,8 @@ export function SignupCard() {
     const { username, pin } = values;
 
     console.log(values);
-    if (!isLoaded) return;
     try {
-      const signUpAttempt = await signUp.create({
-        username: username,
-        password: pin + process.env.NEXT_PUBLIC_PASSWORD_SALT,
-      });
-
-      if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
-        router.push("/dashboard");
-      }
+      // sign up logic goes here
     } catch (error) {
       // const e = error as { errors: { message: string }[] };
       toast.error("FAILED TO SIGN UP!");
