@@ -8,16 +8,19 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
-  id: text("id").notNull().primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(), // hashed password btw
   storageUsed: integer("storage_used").default(0).notNull(),
   notesUsed: integer("notes_used").default(0).notNull(),
 });
+
 
 export const filesTable = pgTable(
   "files",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: text("user_id")
+    userId: uuid("user_id")
       .references(() => usersTable.id, {
         onDelete: "cascade",
       })
@@ -38,7 +41,7 @@ export const notesTable = pgTable(
   "notes",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: text("user_id")
+    userId: uuid("user_id")
       .references(() => usersTable.id, {
         onDelete: "cascade",
       })
@@ -56,7 +59,7 @@ export const codesTable = pgTable(
   "codes",
   {
     code: integer("code").primaryKey(),
-    userId: text("user_id").references(() => usersTable.id, {
+    userId: uuid("user_id").references(() => usersTable.id, {
       onDelete: "cascade",
     }),
   },
