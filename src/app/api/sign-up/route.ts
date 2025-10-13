@@ -5,7 +5,7 @@ import { SignJWT } from "jose";
 
 import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
-import { signUpSchema } from "@/lib/schemas";
+import { signUpSchema } from "@/features/auth/schemas";
 
 export async function POST(req: NextRequest) {
   try {
