@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.log("[SIGN_UP_POST]", error);
+    console.log("[SIGN_IN_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
