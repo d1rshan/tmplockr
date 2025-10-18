@@ -5,7 +5,7 @@ import { jwtVerify } from "jose";
 // middleware cannot use the auth() helper cause it cannot use cookies from next/headers
 // TODO: add logic to prevent going to sign-in and sign-in when valid session exists
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("__lol")?.value;
+  const token = request.cookies.get("__tmplockr_jwt")?.value;
 
   // 2. If no token is found, redirect to the login page
   if (!token) {

@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({ success: true });
 
     response.cookies.set({
-      name: "__lol",
+      name: "__tmplockr_jwt",
       value: token,
       httpOnly: true,
       maxAge: 60 * 60 * 24, // maxAge will automatically delete the cookie from browser
