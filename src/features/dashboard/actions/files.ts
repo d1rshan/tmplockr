@@ -1,8 +1,8 @@
 "use server";
 
-import { ActionResponse } from "@/types";
-import { auth } from "@clerk/nextjs/server";
 import z from "zod";
+import { ActionResponse } from "@/types";
+import { auth } from "@/features/auth/hooks/auth";
 import { fileSchema } from "../schemas";
 import { db } from "@/lib/db";
 import { filesTable, usersTable } from "@/lib/db/schema";
@@ -16,7 +16,7 @@ export async function saveFilesToDB(
   unsafeData: z.infer<typeof fileSchema>[]
 ): ActionResponse {
   try {
-    const { userId } = await auth();
+    const  userId = await auth();
 
     if (!userId) {
       return { success: false, message: "UNAUTHORIZED" };
@@ -79,7 +79,7 @@ export async function deleteFile(
   imagekitId: string
 ): ActionResponse {
   try {
-    const { userId } = await auth();
+    const userId = await auth();
 
     if (!userId) {
       return { success: false, message: "UNAUTHORIZED" };

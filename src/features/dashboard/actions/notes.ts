@@ -8,14 +8,14 @@ import { notesTable, usersTable } from "@/lib/db/schema";
 import { revalidateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { and, eq, sql } from "drizzle-orm";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/features/auth/hooks/auth";
 import { APP_LIMITS } from "@/lib/consts";
 
 export async function createNote(
   unsafeData: z.infer<typeof noteSchema>
 ): ActionResponse {
   try {
-    const { userId } = await auth();
+    const userId = await auth();
 
     if (!userId) {
       return { success: false, message: "UNAUTHORIZED" };
@@ -58,7 +58,7 @@ export async function createNote(
 
 export async function deleteNote(noteId: string): ActionResponse {
   try {
-    const { userId } = await auth();
+    const userId = await auth();
 
     if (!userId) {
       return { success: false, message: "UNAUTHORIZED" };

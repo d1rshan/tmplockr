@@ -1,5 +1,5 @@
 // File: app/api/upload-auth/route.ts
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/features/auth/hooks/auth";
 import { getUploadAuthParams } from "@imagekit/next/server";
 
 export async function GET() {
@@ -7,7 +7,7 @@ export async function GET() {
   // For example, you can check if the user is logged in or has the necessary permissions
   // If the user is not authenticated, you can return an error response
 
-  const { userId } = await auth();
+  const userId = await auth();
 
   if (!userId) {
     return Response.json({ message: "Not Authorized" }, { status: 403 });

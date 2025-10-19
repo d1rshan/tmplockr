@@ -14,8 +14,9 @@ export async function auth() {
   // 3. Verify the token
   try {
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return payload;
+    const { payload } = await jwtVerify<{userId: string}>(token, secretKey);
+    console.log(payload)
+    return payload.userId; // it will just be userId claim
   } catch (error) {
     // 4. If verification fails, return null
     console.error("JWT Verification failed:", error);

@@ -3,7 +3,6 @@
 import { LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
 import { useState } from "react";
 import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 import { logo } from "@/lib/consts";
