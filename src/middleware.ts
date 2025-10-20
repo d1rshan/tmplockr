@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   // 2. If no token is found, redirect to the login page
   if (!token) {
     // Ensure the redirect URL is absolute
-    const loginUrl = new URL("/sign-in", request.url);
+    const loginUrl = new URL("/", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error("JWT Verification Failed:", error);
     // If the token is invalid (expired, wrong signature, etc.), redirect to login
-    const loginUrl = new URL("/sign-in", request.url);
+    const loginUrl = new URL("/", request.url);
     // You might want to clear the invalid cookie here or on the login page
     return NextResponse.redirect(loginUrl);
   }
@@ -41,7 +41,7 @@ export const config = {
      * - favicon.ico (favicon file)
      * - login (the login page itself)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|).*)",
     // You can also explicitly list protected routes
     // '/dashboard/:path*',
     // '/settings/:path*',
