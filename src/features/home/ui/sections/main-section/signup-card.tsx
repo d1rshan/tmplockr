@@ -1,5 +1,7 @@
 "use client";
 
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -62,10 +64,13 @@ export function SignupCard() {
     console.log(values);
     try {
       // sign up logic goes here
-    } catch (error) {
-      // const e = error as { errors: { message: string }[] };
-      toast.error("FAILED TO SIGN UP!");
-      console.log("Error signing up", JSON.stringify(error, null, 2));
+      const { username, pin } = values;
+      await axios.post("/api/sign-up", { username, password: pin }); // axios automatically throws the error
+      toast.success("Account created successfully");
+      router.push("/");
+    } catch (error: any) {
+      toast.error(error.response?.data || "Unknown error occured");
+      console.log("[SIGN_UP]", error);
     }
   }
 

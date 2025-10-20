@@ -1,5 +1,7 @@
 "use client";
 
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -46,15 +48,15 @@ export function LoginCard() {
   } = form;
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    const { username, pin } = values;
 
     try {
-      // sign in logic goes here
-    } catch (error: unknown) {
-      const e = error as { errors: { message: string }[] };
-      toast.error(e?.errors[0].message.toUpperCase());
-      setError("root", { message: e?.errors[0].message.toUpperCase() });
-      console.log("ERROR SIGNING IN", JSON.stringify(error, null, 2));
+      const { username, pin } = values;
+      await axios.post("/api/sign-in", { username, password: pin });
+      toast.success("Logged in successfully");
+      router.push("/");
+    } catch (error: any) {
+      toast.error(error.response?.data || "Unknown error occured");
+      console.log("[SIGN_IN]", error);
     }
   }
 
