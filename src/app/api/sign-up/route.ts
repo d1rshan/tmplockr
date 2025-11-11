@@ -5,21 +5,20 @@ import { SignJWT } from "jose";
 
 import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
-import { signUpSchema } from "@/features/auth/schemas";
+import { signupBaseSchema } from "@/features/auth/schemas";
 
 export async function POST(req: NextRequest) {
   try {
     const unsafeData = await req.json();
 
-    const { data, success } = signUpSchema
-      .omit({ confirmPassword: true })
+    const { data, success } = signupBaseSchema
       .safeParse(unsafeData);
 
     if (!success) {
       return new NextResponse("Invalid request data", { status: 400 });
     }
 
-    const { username, password } = data;
+    const { username, pin } = data;
 
     // check if username already exists in db & throw error if it does
     const [userExists] = await db
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // hash password & save the account to db
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(pin, saltRounds);
 
     const [newUser] = await db
       .insert(usersTable)

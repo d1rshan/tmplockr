@@ -5,19 +5,18 @@ import { SignJWT } from "jose";
 
 import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
-import { signInSchema } from "@/features/auth/schemas";
+import { signinBaseSchema } from "@/features/auth/schemas";
 
 export async function POST(req: NextRequest) {
   try {
     const unsafeData = await req.json();
-
-    const { data, success } = signInSchema.safeParse(unsafeData);
+    const { data, success } = signinBaseSchema.safeParse(unsafeData);
 
     if (!success) {
       return new NextResponse("Invalid request data", { status: 400 });
     }
 
-    const { username, password } = data;
+    const { username, pin } = data;
 
     // check if username exists in db & throw error if not -> and extract user from db
     const [user] = await db
@@ -33,8 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     // use compare method from bcrypt to compare passwords & throw error if they don't match
-
-    const passwordMatches = await bcrypt.compare(password, user.password);
+    const passwordMatches = await bcrypt.compare(pin, user.password);
 
     if (!passwordMatches) {
       return new NextResponse("Incorrect password", { status: 400 });

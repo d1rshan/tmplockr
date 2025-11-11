@@ -1,6 +1,12 @@
 "use client";
 
 import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,35 +18,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-
-const signupFormSchema = z
-  .object({
-    username: z
-      .string()
-      .nonempty({ message: "USERNAME IS REQUIRED" })
-      .min(4, { message: "USERNAME MUST BE AT LEAST 4 CHARACTERS" }),
-    pin: z
-      .string()
-      .trim()
-      .nonempty({ message: "PIN IS REQUIRED" })
-      .length(4, { message: "PIN MUST BE 4 DIGITS" }),
-    confirmPin: z
-      .string()
-      .trim()
-      .nonempty({ message: "CONFIRM PIN IS REQUIRED" })
-      .length(4, { message: "PIN MUST BE 4 DIGITS" }),
-  })
-  .refine((data) => data.pin === data.confirmPin, {
-    path: ["confirmPin"],
-    error: "PINS DO NOT MATCH",
-  });
+import { signupFormSchema } from "@/features/auth/schemas";
 
 export function SignupCard() {
   const router = useRouter();
@@ -59,13 +38,10 @@ export function SignupCard() {
   } = form;
 
   async function onSubmit(values: z.infer<typeof signupFormSchema>) {
-    const { username, pin } = values;
-
-    console.log(values);
     try {
       // sign up logic goes here
       const { username, pin } = values;
-      await axios.post("/api/sign-up", { username, password: pin }); // axios automatically throws the error
+      await axios.post("/api/sign-up", { username: username.toUpperCase(), pin }); // axios automatically throws the error
       toast.success("Account created successfully");
       router.push("/");
     } catch (error: any) {

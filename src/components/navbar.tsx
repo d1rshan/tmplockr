@@ -32,13 +32,12 @@ export const Navbar = () => {
 };
 
 const SignoutButton = () => {
-  const { signOut } = useClerk();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSignout() {
     try {
       setIsLoading(true);
-      await signOut();
+      // await signOut();
     } catch (error) {
       console.log("Error in handleSignout", error);
     } finally {

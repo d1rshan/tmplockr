@@ -1,6 +1,13 @@
 "use client";
 
 import axios from "axios";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,24 +19,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-
-const loginFormSchema = z.object({
-  username: z
-    .string()
-    .min(1, { error: "USERNAME IS REQUIRED" })
-    .min(4, { error: "USERNAME MUST BE ATLEAST 4 CHARACTERS" }),
-  pin: z
-    .string()
-    .min(1, { error: "PIN IS REQUIRED" })
-    .length(4, { error: "PIN MUST BE 4 DIGITS" }),
-});
+import { loginFormSchema } from "@/features/auth/schemas";
 
 export function LoginCard() {
   const router = useRouter();
@@ -43,15 +33,13 @@ export function LoginCard() {
   });
 
   const {
-    setError,
     formState: { errors },
   } = form;
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-
     try {
       const { username, pin } = values;
-      await axios.post("/api/sign-in", { username, password: pin });
+      await axios.post("/api/sign-in", { username: username.toUpperCase(), pin });
       toast.success("Logged in successfully");
       router.push("/");
     } catch (error: any) {
