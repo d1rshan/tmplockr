@@ -43,7 +43,7 @@ export function SignupCard() {
       const { username, pin } = values;
       await axios.post("/api/sign-up", { username: username.toUpperCase(), pin }); // axios automatically throws the error
       toast.success("Account created successfully");
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.response?.data || "Unknown error occured");
       console.log("[SIGN_UP]", error);

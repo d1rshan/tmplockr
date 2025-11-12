@@ -41,7 +41,7 @@ export function LoginCard() {
       const { username, pin } = values;
       await axios.post("/api/sign-in", { username: username.toUpperCase(), pin });
       toast.success("Logged in successfully");
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.response?.data || "Unknown error occured");
       console.log("[SIGN_IN]", error);
