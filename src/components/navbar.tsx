@@ -1,9 +1,11 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { Button } from "./ui/button";
-import { usePathname } from "next/navigation";
+import axios from "axios";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+
+import { Button } from "./ui/button";
 import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 import { logo } from "@/lib/consts";
 
@@ -32,12 +34,14 @@ export const Navbar = () => {
 };
 
 const SignoutButton = () => {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSignout() {
     try {
       setIsLoading(true);
-      // await signOut();
+      await axios.post("/api/sign-out")
+      router.push("/")
     } catch (error) {
       console.log("Error in handleSignout", error);
     } finally {
