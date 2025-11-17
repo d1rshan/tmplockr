@@ -26,7 +26,7 @@ function CardHeader({
         "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         "relative px-4",
         separator
-          ? "border-b min-h-10 flex items-center font-semibold subtle-headings"
+          ? "border-b min-h-10 flex items-center font-semibold subtle-headings "
           : "font-medium pt-2",
         className
       )}

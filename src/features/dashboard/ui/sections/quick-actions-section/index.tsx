@@ -32,7 +32,7 @@ export async function QuickActionsSection() {
         <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>SHARE FILES & NOTES</CardTitle>
-            <CardDescription>0 FILES, 0 NOTES SELECTED.</CardDescription>
+            <CardDescription className="text-muted-foreground">0 FILES, 0 NOTES SELECTED.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">

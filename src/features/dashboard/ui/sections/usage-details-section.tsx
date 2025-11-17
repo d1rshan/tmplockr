@@ -18,7 +18,7 @@ export async function UsageDetailsSection() {
           <CardHeader>
             <CardTitle>USED STORAGE</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-muted-foreground">
             {toMB(storageUsed)}/{APP_LIMITS.STORAGE / (1024 * 1024)} MB
           </CardContent>
         </Card>
@@ -26,7 +26,7 @@ export async function UsageDetailsSection() {
           <CardHeader>
             <CardTitle>NOTES CREATED</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-muted-foreground">
             {notesUsed}/{APP_LIMITS.NOTES}
           </CardContent>
         </Card>
@@ -34,7 +34,7 @@ export async function UsageDetailsSection() {
           <CardHeader>
             <CardTitle>ACTIVE SHARES</CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block">?/5</CardContent>
+          <CardContent className="hidden sm:block text-muted-foreground">?/5</CardContent>
         </Card>
       </CardContent>
     </Card>

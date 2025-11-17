@@ -38,7 +38,7 @@ function Component() {
     <Card className="sm:col-span-4">
       <CardHeader>
         <CardTitle>UPLOAD FILES</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-muted-foreground">
           {isUploading
             ? "UPLOADING..."
             : `${acceptedFiles.length} FILES SELECTED, ${totalSize} MB TOTAL`}

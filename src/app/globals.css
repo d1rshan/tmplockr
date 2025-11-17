@@ -118,22 +118,26 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-.ascii-art{
+.ascii-art {
   line-height: 1;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
+  /* Chrome, Safari */
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .subtle-stripes {
@@ -149,18 +153,16 @@
   position: absolute;
   inset: 0;
 
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--color-border) 0px,
-    var(--color-border) 1.5px,
-    transparent 1.5px,
-    transparent 4px
-  );
+  background: repeating-linear-gradient(-45deg,
+      var(--color-border) 0px,
+      var(--color-border) 1.5px,
+      transparent 1.5px,
+      transparent 4px);
   opacity: 0.2;
   z-index: -10;
 }
 
-.subtle-headings{
+.subtle-headings {
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -173,18 +175,17 @@
   position: absolute;
   inset: 0;
 
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--color-border) 0px,
-    var(--color-border) 1.5px,
-    transparent 1.5px,
-    transparent 4px
-  );
+  background: repeating-linear-gradient(-45deg,
+      var(--color-border) 0px,
+      var(--color-border) 1.5px,
+      transparent 1.5px,
+      transparent 4px);
   opacity: 0.2;
   z-index: -10;
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

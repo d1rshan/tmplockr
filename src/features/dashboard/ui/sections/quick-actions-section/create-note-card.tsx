@@ -66,7 +66,7 @@ export function CreateNoteCard({ notesUsed }: { notesUsed: number }) {
                 <FormItem>
                   <FormLabel>CONTENT</FormLabel>
                   <FormControl>
-                    <Textarea className=" resize-none h-50" {...field} />
+                    <Textarea className="resize-none h-50" {...field} />
                   </FormControl>
                 </FormItem>
               )}

@@ -65,6 +65,7 @@ export const codesTable = pgTable(
   },
   (t) => [index("codes_user_id_index").on(t.userId)]
 );
+
 export const sharedFilesNotesTable = pgTable(
   "shared_files_notes",
   {
