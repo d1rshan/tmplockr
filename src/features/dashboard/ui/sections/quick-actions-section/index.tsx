@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/input-otp";
 import { CreateNoteCard } from "./create-note-card";
 import { UploadFilesCard } from "./upload-files-card";
+import { ShareFilesNotesCard } from "./share-files-notes-card";
 import { verifySession } from "@/lib/verify-session";
-import { getUsageDetails } from "@/features/dashboard/data";
+import { getUsageDetails, getFiles, getNotes } from "@/features/dashboard/data";
 
 export async function QuickActionsSection() {
   const userId = await verifySession();
   const { notesUsed } = await getUsageDetails(userId);
+  const files = await getFiles(userId);
+  const notes = await getNotes(userId);
 
   return (
     <Card>
@@ -29,22 +32,7 @@ export async function QuickActionsSection() {
         <UploadFilesCard />
         <CreateNoteCard notesUsed={notesUsed} />
 
-        <Card className="sm:col-span-4">
-          <CardHeader>
-            <CardTitle>SHARE FILES & NOTES</CardTitle>
-            <CardDescription className="text-muted-foreground">0 FILES, 0 NOTES SELECTED.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <Button className="w-full" disabled>
-                SELECT
-              </Button>
-              <Button className="w-full" disabled>
-                SHARE
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ShareFilesNotesCard files={files} notes={notes} />
         <Card className="sm:col-span-4">
           <CardHeader>
             <CardTitle>RECIEVE FILES</CardTitle>
