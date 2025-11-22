@@ -17,16 +17,22 @@ export function FilesCard({ files }: { files: File[] }) {
       <CardHeader>
         <CardTitle>FILES</CardTitle>
       </CardHeader>
-      <CardContent className="uppercase flex flex-col gap-2 h-40 overflow-y-scroll scrollbar-hide ">
-        {files.map((file) => (
-          <FileItem key={file.id} file={file} />
-        ))}
+      <CardContent className="uppercase flex flex-col gap-3 h-80 overflow-y-scroll scrollbar-hide">
+        {files.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+            NO FILES YET
+          </div>
+        ) : (
+          files.map((file, index) => (
+            <FileItem key={file.id} file={file} index={index + 1} />
+          ))
+        )}
       </CardContent>
     </Card>
   );
 }
 
-function FileItem({ file }: { file: File }) {
+function FileItem({ file, index }: { file: File; index: number }) {
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
@@ -44,39 +50,54 @@ function FileItem({ file }: { file: File }) {
   return (
     <div
       className={cn(
-        "flex justify-between items-center",
+        "group relative border border-border rounded-lg p-3 hover:bg-accent/50 transition-all duration-200",
         isPending && "opacity-40"
       )}
     >
-      <span>{file.name}</span>
-      <div className="flex gap-3 items-center justify-center">
-        <Button variant="ghost" size="icon" asChild>
-          <Link
-            href={file.imagekitUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Link2 className="size-3.5" />
-          </Link>
-        </Button>
-        <Button
-          variant="custom"
-          size="icon"
-          onClick={() => {
-            saveAs(file.imagekitUrl, file.name);
-          }}
-        >
-          <Download className="size-3.5" />
-        </Button>
+      <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 w-8 h-8 bg-muted rounded-full flex items-center justify-center text-xs font-medium text-muted-foreground">
+          {index.toString().padStart(2, '0')}
+        </div>
 
-        <Button
-          variant="custom"
-          size="icon"
-          onClick={handleDelete}
-          disabled={isPending}
-        >
-          <Trash className="size-3.5 text-destructive" />
-        </Button>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate" title={file.name}>
+            {file.name}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            File • {new Date().toLocaleDateString()}
+          </p>
+        </div>
+
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+            <Link
+              href={file.imagekitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Link2 className="size-3" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              saveAs(file.imagekitUrl, file.name);
+            }}
+          >
+            <Download className="size-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 hover:bg-destructive/10"
+            onClick={handleDelete}
+            disabled={isPending}
+          >
+            <Trash className="size-3 text-destructive" />
+          </Button>
+        </div>
       </div>
     </div>
   );
