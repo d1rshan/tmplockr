@@ -12,3 +12,8 @@ export const fileSchema = z.object({
   imagekitId: z.string().min(1),
   imagekitUrl: z.string().min(1),
 });
+
+export const shareSchema = z.object({
+  notes: z.array(z.string().uuid()).default([]),
+  files: z.array(z.string().uuid()).default([]),
+});

@@ -1,6 +1,7 @@
 export const APP_LIMITS = {
   STORAGE: 100 * 1024 * 1024,
   NOTES: 10,
+  SHARES: 5,
 };
 
 export const logo = `

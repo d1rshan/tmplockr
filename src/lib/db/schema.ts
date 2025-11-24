@@ -13,6 +13,7 @@ export const usersTable = pgTable("users", {
   password: text("password").notNull(), // hashed password btw
   storageUsed: integer("storage_used").default(0).notNull(),
   notesUsed: integer("notes_used").default(0).notNull(),
+  sharesUsed: integer("shares_used").default(0).notNull()
 });
 
 
