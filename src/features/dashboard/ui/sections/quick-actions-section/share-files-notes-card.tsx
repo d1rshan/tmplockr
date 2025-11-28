@@ -20,6 +20,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { File, Note } from "@/lib/db/schema";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { createShare } from "@/features/dashboard/actions/shares";
+import { toast } from "sonner";
 
 interface ShareFilesNotesCardProps {
   files: File[];
@@ -47,9 +49,16 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
     );
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     console.log("Selected Files:", selectedFiles);
     console.log("Selected Notes:", selectedNotes);
+
+    const res = await createShare({ files: selectedFiles, notes: selectedNotes });
+    if (res.success) {
+      toast.success("SHARE CREATED");
+    } else {
+      toast.error("FAILED TO CREATE SHARE");
+    }
     setIsDialogOpen(false);
   };
 
