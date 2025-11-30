@@ -47,7 +47,7 @@ export async function QuickActionsSection() {
                     <InputOTPSlot index={3} />
                   </InputOTPGroup>
                 </InputOTP>
-                <Button type="submit" disabled>
+                <Button type="submit">
                   RECIEVE
                 </Button>
               </div>

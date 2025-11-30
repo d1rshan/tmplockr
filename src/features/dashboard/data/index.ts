@@ -1,9 +1,11 @@
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import {
+  codesTable,
   File,
   filesTable,
   notesTable,
+  sharedFilesNotesTable,
   usersTable,
   type Note,
 } from "@/lib/db/schema";
@@ -47,4 +49,51 @@ export async function getUsageDetails(userId: string) {
 
   console.log("GET USAGE DETAILS HIT");
   return usage_details;
+}
+
+export async function recieve(code: number) {
+  const existing = await db
+    .select({ code: codesTable.code })
+    .from(codesTable)
+    .where(eq(codesTable.code, code))
+    .limit(1);
+
+  if (existing.length === 0) {
+    return null
+  }
+
+  const files = await db
+    .select({
+      id: filesTable.id,
+      userId: filesTable.userId,
+      name: filesTable.name,
+      size: filesTable.size,
+      type: filesTable.type,
+      imagekitUrl: filesTable.imagekitUrl,
+      imagekitId: filesTable.imagekitId,
+      uploadedAt: filesTable.uploadedAt,
+    })
+    .from(sharedFilesNotesTable)
+    .innerJoin(
+      filesTable,
+      eq(sharedFilesNotesTable.file_id, filesTable.id)
+    )
+    .where(eq(sharedFilesNotesTable.code, code));
+
+  const notes = await db
+    .select({
+      id: notesTable.id,
+      userId: notesTable.userId,
+      title: notesTable.title,
+      content: notesTable.content,
+      createdAt: notesTable.createdAt
+    })
+    .from(sharedFilesNotesTable)
+    .innerJoin(
+      notesTable,
+      eq(sharedFilesNotesTable.note_id, notesTable.id)
+    )
+    .where(eq(sharedFilesNotesTable.code, code));
+
+  return { files, notes }
 }

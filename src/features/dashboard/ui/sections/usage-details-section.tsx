@@ -6,7 +6,7 @@ import { APP_LIMITS } from "@/lib/consts";
 
 export async function UsageDetailsSection() {
   const userId = await verifySession();
-  const { storageUsed, notesUsed } = await getUsageDetails(userId);
+  const { storageUsed, notesUsed, sharesUsed } = await getUsageDetails(userId);
 
   return (
     <Card>
@@ -34,7 +34,9 @@ export async function UsageDetailsSection() {
           <CardHeader>
             <CardTitle>ACTIVE SHARES</CardTitle>
           </CardHeader>
-          <CardContent className="hidden sm:block text-muted-foreground">?/5</CardContent>
+          <CardContent className="text-muted-foreground">
+            {sharesUsed}/{APP_LIMITS.SHARES}
+          </CardContent>
         </Card>
       </CardContent>
     </Card>
