@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFiles, getNotes } from "@/features/dashboard/data";
+import { getFiles, getNotes, getShares } from "@/features/dashboard/data";
 import { FilesCard } from "./files-card";
 import { NotesCard } from "./notes-card";
 import { SharesCard } from "./shares-card";
@@ -10,6 +10,7 @@ export async function FilesNotesSharesSection() {
 
   const notes = await getNotes(userId);
   const files = await getFiles(userId);
+  const shares = await getShares(userId)
 
   return (
     <Card className="mb-4">
@@ -19,7 +20,7 @@ export async function FilesNotesSharesSection() {
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FilesCard files={files} />
         <NotesCard notes={notes} />
-        <SharesCard />
+        <SharesCard shares={shares} />
       </CardContent>
     </Card>
   );

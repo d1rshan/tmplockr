@@ -1,16 +1,18 @@
+import { eq } from "drizzle-orm";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import {
+  type Code,
   codesTable,
-  File,
+  type File,
   filesTable,
   notesTable,
   sharedFilesNotesTable,
   usersTable,
   type Note,
 } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 
 export async function getNotes(userId: string): Promise<Note[]> {
   "use cache";
@@ -36,6 +38,20 @@ export async function getFiles(userId: string): Promise<File[]> {
 
   console.log("GET FILES HIT");
   return files;
+}
+
+
+export async function getShares(userId: string): Promise<Code[]> {
+  "use cache";
+  cacheTag(CACHE_TAGS.shares(userId));
+
+  const codes = await db
+    .select()
+    .from(codesTable)
+    .where(eq(codesTable.userId, userId));
+
+  console.log("GET SHARES HIT");
+  return codes;
 }
 
 export async function getUsageDetails(userId: string) {
