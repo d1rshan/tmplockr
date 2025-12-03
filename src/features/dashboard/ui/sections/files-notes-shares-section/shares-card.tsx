@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Code } from "@/lib/db/schema";
 import { toast } from "sonner";
 
