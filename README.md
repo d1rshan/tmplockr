@@ -7,6 +7,8 @@ Currently under active development.
 
 ## To Do
 
-- [ ] Migrate to own authentication system
-- [ ] Implement files & note sharing
-- [ ] Update files, notes, and shares card UI
+- [ x ] Receive files in dashboard, home - add redirect
+- [ ] Proper toasts, glass toast ui maybe
+- [ ] Shares code ui (use stripes effect for the bg of digits)
+- [ ] Auth checks for forbidden access
+- [ ] UI - no. circle in files, notes, shares item

@@ -22,13 +22,13 @@ export function RecieveCard() {
   };
 
   return (
-    <Card>
-      <CardHeader separator>
+    <Card className="sm:col-span-4">
+      <CardHeader>
         <CardTitle>RECIEVE FILES</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleReceive}>
-          <div className="flex justify-between gap-2">
+          <div className="flex justify-between items-center gap-2">
             <InputOTP
               maxLength={4}
               value={otpValue}
