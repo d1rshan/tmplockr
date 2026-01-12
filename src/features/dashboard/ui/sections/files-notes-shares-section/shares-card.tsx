@@ -2,10 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
+import { Copy, Trash } from "lucide-react";
 import { Code } from "@/lib/db/schema";
 import { toast } from "sonner";
-
+import { deleteShare } from "@/features/dashboard/actions/shares";
 
 export function SharesCard({ shares }: { shares: Code[] }) {
   return (
@@ -32,6 +32,15 @@ function ShareItem({ share, index }: { share: Code; index: number }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(share.code.toString());
     toast.success("CODE COPIED TO CLIPBOARD");
+  };
+
+  const handleDelete = async () => {
+    const res = await deleteShare(share.code);
+    if (res.success) {
+      toast.success("SHARE DELETED");
+    } else {
+      toast.error(res.message || "FAILED TO DELETE SHARE");
+    }
   };
 
   return (
@@ -64,6 +73,14 @@ function ShareItem({ share, index }: { share: Code; index: number }) {
             onClick={handleCopy}
           >
             <Copy className="size-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleDelete}
+          >
+            <Trash className="size-3" />
           </Button>
         </div>
       </div>

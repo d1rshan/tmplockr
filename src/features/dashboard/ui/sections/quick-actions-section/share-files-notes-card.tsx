@@ -30,6 +30,7 @@ interface ShareFilesNotesCardProps {
 
 export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
 
@@ -53,13 +54,16 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
     console.log("Selected Files:", selectedFiles);
     console.log("Selected Notes:", selectedNotes);
 
+    setIsSharing(true)
     const res = await createShare({ files: selectedFiles, notes: selectedNotes });
     if (res.success) {
       toast.success("SHARE CREATED");
+      setSelectedFiles([])
+      setSelectedNotes([])
     } else {
       toast.error("FAILED TO CREATE SHARE");
     }
-    setIsDialogOpen(false);
+    setIsSharing(false)
   };
 
   const totalSelected = selectedFiles.length + selectedNotes.length;
@@ -77,7 +81,7 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
         <div className="grid grid-cols-2 gap-4">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full">
+              <Button className="w-full" disabled={isSharing}>
                 SELECT
               </Button>
             </DialogTrigger>
@@ -101,8 +105,8 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
                         <div
                           key={file.id}
                           className={cn(
-                            "flex items-center space-x-3 p-2 rounded-lg border hover:bg-accent/50 transition-colors",
-                            selectedFiles.includes(file.id!) && "bg-accent"
+                            "flex items-center space-x-3 p-2 rounded-lg border transition-colors",
+                            selectedFiles.includes(file.id!) && "subtle-stripes"
                           )}
                         >
                           <Checkbox
@@ -135,8 +139,8 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
                         <div
                           key={note.id}
                           className={cn(
-                            "flex items-center space-x-3 p-2 rounded-lg border hover:bg-accent/50 transition-colors",
-                            selectedNotes.includes(note.id!) && "bg-accent"
+                            "flex items-center space-x-3 p-2 rounded-lg border transition-colors",
+                            selectedNotes.includes(note.id!) && "subtle-stripes"
                           )}
                         >
                           <Checkbox
@@ -160,11 +164,11 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
 
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
-                    onClick={() => setIsDialogOpen(false)}
+                    onClick={() => { setSelectedFiles([]); setSelectedNotes([]); setIsDialogOpen(false) }}
                   >
                     CANCEL
                   </Button>
-                  <Button onClick={handleShare} disabled={!hasSelections}>
+                  <Button onClick={() => setIsDialogOpen(false)} disabled={!hasSelections}>
                     DONE ({totalSelected} SELECTED)
                   </Button>
                 </div>
@@ -174,7 +178,7 @@ export function ShareFilesNotesCard({ files, notes }: ShareFilesNotesCardProps) 
 
           <Button
             className="w-full"
-            disabled={!hasSelections}
+            disabled={!hasSelections || isSharing}
             onClick={handleShare}
           >
             SHARE

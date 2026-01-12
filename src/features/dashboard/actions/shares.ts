@@ -138,7 +138,7 @@ export async function deleteShare(
         .where(eq(usersTable.id, userId));
     });
 
-    revalidateTag(CACHE_TAGS.notes(userId));
+    revalidateTag(CACHE_TAGS.shares(userId));
     revalidateTag(CACHE_TAGS.usage_details(userId));
 
     return { success: true };
